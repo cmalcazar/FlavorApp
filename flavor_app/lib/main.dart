@@ -1,125 +1,264 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'createaccount.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'favoriteProvider.dart';
+import 'optionpage.dart';
+import 'postprovider.dart';
+
+//This main page where the LOGIN is going to take place
+Future<void> main() async {
+  //this is the firebase configuration
+  WidgetsFlutterBinding.ensureInitialized();
+  String apiKey = 'AIzaSyAZ4KxmNjRzXwJM9utexG9p9PV31MnrLX8';
+  String appId = '1:366937079655:android:9b70633b05d073c7edf9c2';
+  String messagingSenderId = '366937079655';
+  String projectId = 'recipeapp-3ab43';
+
+  await Firebase.initializeApp(
+      options: FirebaseOptions(
+          apiKey: apiKey,
+          appId: appId,
+          messagingSenderId: messagingSenderId,
+          projectId: projectId));
+
+  runApp(const Login());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Login extends StatelessWidget {
+  const Login({super.key});
 
-  // This widget is the root of your application.
+  //this MultiProvider initializes the provider so that a new instance doesn't have to be created
+  //throughout the app and all information can be accessed from anywhere
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        Provider<FirebaseAuth>(
+          create: (context) => FirebaseAuth.instance,
+        ),
+        Provider<FirebaseFirestore>(
+          create: (context) => FirebaseFirestore.instance,
+        ),
+        ChangeNotifierProvider(create: (context) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (context) => PostProvider()),
+        Provider<FirebaseStorage>(create: (context) => FirebaseStorage.instance)
+      ],
+      child: MaterialApp(
+        theme: ThemeData(
+          primarySwatch: Colors.red,
+        ),
+        home: const LoginPage(),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _LoginPageState extends State<LoginPage> {
+  final GlobalKey<FormFieldState<String>> _user = GlobalKey();
+  final GlobalKey<FormFieldState<String>> _pass = GlobalKey();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  //This function validates the user input to make sure it's not null
+  submit() {
+    final isValid = _user.currentState?.validate();
+    final isValids = _pass.currentState?.validate();
+    if (!isValid! || !isValids!) {
+      return false;
+    }
+    _user.currentState?.save();
+    _pass.currentState?.save();
+    return true;
+  }
+
+  //this function gets the values from the user input make sure it's correct
+  get values => {
+    'Email': _user.currentState?.value,
+    'Password': _pass.currentState?.value
+  };
+
+  //this is the login function that checks if the user is in the database
+  Future<bool?> login() async {
+    //the auth and db variables are used to access the firebase authentication and firestore
+    final auth = Provider.of<FirebaseAuth>(context, listen: false);
+    final db = Provider.of<FirebaseFirestore>(context, listen: false);
+    String message = '';
+
+    //this try catch block checks if the user is in the database and if not it will throw an error
+    try {
+      UserCredential userCredential = await auth.signInWithEmailAndPassword(
+        email: _user.currentState!.value!,
+        password: _pass.currentState!.value!,
+      );
+
+      User? user = userCredential.user;
+
+      if (user != null) {
+        print('Login Successful!');
+        print('User ID: ${user.uid}');
+        print('Email: ${user.email}');
+
+        return true;
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print(e.code);
+        message = 'No user found for that email.';
+        print(e.code);
+      } else if (e.code == 'wrong-password') {
+        print(e.code);
+
+        message = 'Wrong password provided for that user.';
+      } else if (e.code == 'invalid-email') {
+        print(e.code);
+
+        message = 'Invalid email';
+      } else if (e.code == 'too-many-requests') {
+        print(e.code);
+
+        message = 'Too many requests';
+      } else if (e.code == 'email-already-in-use') {
+        print(e.code);
+
+        message = 'Email already in use';
+      } else if (e.code == 'weak-password') {
+        print(e.code);
+
+        message = 'The password provided is too weak.';
+      } else if (e.code == 'invalid-credential') {
+        print(e.code);
+
+        message = 'Invalid email.';
+      } else {
+        print(e.code);
+
+        message = 'Invalid email or password.';
+      }
+
+      //If the user is not in the database then it will display an error message
+      //via snackbar
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ));
+    } catch (e) {
+      //print('here: ${e.toString()}');
+    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: SingleChildScrollView(
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            Center(
+              child: Container(
+                margin: const EdgeInsets.only(top: 100),
+                child: const Text('Flavor',
+                    style: TextStyle(fontSize: 50, color: Colors.red)),
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            const Center(
+              child: Text(
+                'Version: 0.0.1',
+                style: TextStyle(fontSize: 15, color: Colors.grey),
+              ),
+            ),
+            const Center(
+              child: Text(
+                'Login to your account',
+                style: TextStyle(
+                    fontSize: 35,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+
+            //This is the form that the user will use to login
+            TextFormField(
+              key: _user,
+              decoration: const InputDecoration(
+                hintText: 'Email',
+                icon: Icon(Icons.email),
+              ),
+              validator: (value) {
+                print(values);
+                if (value!.isEmpty) {
+                  return 'Email is required';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              key: _pass,
+              obscureText: true,
+              decoration: const InputDecoration(
+                hintText: 'Password',
+                icon: Icon(Icons.lock),
+              ),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Password is required';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 20.0),
+            //this is the login button
+            ElevatedButton(
+              style: ButtonStyle(
+                  shape: MaterialStateProperty.all(const StadiumBorder()),
+                  textStyle:
+                  MaterialStateProperty.all(const TextStyle(fontSize: 35)),
+                  fixedSize: MaterialStateProperty.all(const Size(150, 50))),
+              onPressed: () async {
+                if (submit() && await login.call() == true) {
+                  print(values);
+                  if (mounted) {
+                    //this will take the user to the option page
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const OptionPage()));
+                  }
+                }
+              },
+              child: const Text('Login'),
+            ),
+            const SizedBox(height: 20.0),
+            //This is the create account button
+            ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.grey),
+                  shape: MaterialStateProperty.all(const StadiumBorder()),
+                  fixedSize: MaterialStateProperty.all(const Size(150, 50))),
+              onPressed: () {
+                //This will take the user to the create account page
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CreateAccount()));
+              },
+              child: const Text(
+                'Create Account',
+                style: TextStyle(color: Colors.black, fontSize: 17),
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

@@ -1,2 +1,9 @@
 # FlavorApp
-App 
+## How to start:
+```
+flutter pub get
+flutter run
+
+```
+
+
