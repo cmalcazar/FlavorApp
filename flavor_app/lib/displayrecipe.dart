@@ -71,15 +71,9 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
     );
   }
 
-  //This is the description of the recipe
-  _postDescription(var post) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: Text(post.posts.description, style: const TextStyle(fontSize: 16)),
-    );
-  }
 
-  //this is the image of the recipe
+
+  // //this is the image of the recipe
   // _postImage(var index) {
   //   return Column(
   //     children: <Widget>[
@@ -113,28 +107,8 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
     );
   }
 
-  //this is the view of the recipe
-  _postView(var post) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _postAuthor(post),
-        // _postImage(post),
-        _postDescription(post),
-        _like(post)
-      ],
-    );
-  }
 
-  //this is the list view of the recipe
-  _postListView(var posts) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _postView(posts),
-      ],
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +130,9 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
               itemBuilder: (BuildContext context, int index) {
                 var post = posts[index];
                 //this is the list of recipes
-                return _postListView(post);
+                return ListTile(
+                  title: Text(post.posts.recipeName),
+                );
               },
             )),
       ]),
