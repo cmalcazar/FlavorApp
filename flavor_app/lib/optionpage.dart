@@ -50,8 +50,8 @@ class _PageState extends State<Pages> {
   // you will need to add a new page and add it to the list
   //then add a new icon to the bottom navigator
   final List<Widget> _pages = [
-    const UserFavoritesPage(),
-    const DisplayRecipePage(),
+    const UserFavorites(),
+    const DisplayRecipe(),
     const SearchPage()
   ];
 
