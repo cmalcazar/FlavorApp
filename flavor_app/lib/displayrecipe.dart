@@ -1,6 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:favorite_button/favorite_button.dart';
 
@@ -50,7 +47,7 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
     print(posts.length);
   }
 
-  //this is the like button
+//this is the like button
   _like(var post) {
     final favs = Provider.of<FavoritesProvider>(context, listen: false);
     return Padding(
@@ -70,45 +67,6 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
       ),
     );
   }
-
-
-
-  // //this is the image of the recipe
-  // _postImage(var index) {
-  //   return Column(
-  //     children: <Widget>[
-  //       Image.network(
-  //           'https://pixabay.com/photos/spaghetti-tomatoes-basil-1932466/'),
-  //     ],
-  //   );
-  // }
-
-  //This is the author of the recipe
-  _postAuthor(var post) {
-    return Row(
-      children: [
-        const CircleAvatar(
-          radius: 20,
-          backgroundImage: NetworkImage("https://picsum.photos/200"),
-        ),
-        const SizedBox(
-          width: 10,
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              post.poster,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -131,8 +89,13 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
                 var post = posts[index];
                 //this is the list of recipes
                 return ListTile(
-                  leading: Image.network(post.posts.image!),
+                  leading: Image.network(
+                    post.posts.image!,
+                    fit: BoxFit.cover,
+                  ),
                   title: Text(post.posts.recipeName),
+                  subtitle: Text(post.poster!.displayName!),
+                  trailing: _like(post),
                 );
               },
             )),

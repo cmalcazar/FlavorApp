@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'displayrecipe.dart';
+import 'displayRecipe.dart';
 import 'userfavorites.dart';
 
+import 'main.dart';
 import 'search.dart';
 
 //This is the option page where the bottom navigator is located
@@ -16,11 +15,41 @@ class OptionPage extends StatelessWidget {
   options() {}
   @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<FirebaseAuth>(context);
     return MaterialApp(
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
       home: Scaffold(
+          drawer: Drawer(
+            child: ListView(
+              children: [
+                const DrawerHeader(
+                    decoration: BoxDecoration(color: Colors.red),
+                    child: Text(
+                      'Menu',
+                      style: TextStyle(fontSize: 30, color: Colors.white),
+                    )),
+                ListTile(
+                  leading: const Icon(
+                    Icons.exit_to_app_sharp,
+                    color: Colors.red,
+                    opticalSize: 10.5,
+                  ),
+                  title: const Text(
+                    'Logout',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  onTap: () {
+                    auth.signOut();
+                    print('Current user: ${auth.currentUser!}');
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => const Login()));
+                  },
+                ),
+              ],
+            ),
+          ),
           appBar: AppBar(
             title: const Text(
               'Flavor',
@@ -50,10 +79,12 @@ class _PageState extends State<Pages> {
   // you will need to add a new page and add it to the list
   //then add a new icon to the bottom navigator
   final List<Widget> _pages = [
-    const UserFavorites(),
-    const DisplayRecipe(),
+    const UserFavoritesPage(),
+    const DisplayRecipePage(),
     const SearchPage()
   ];
+
+  late final authUser;
 
   //This is the method that will be called when the user taps on the bottom navigator
   void _onItemTapped(int index) {

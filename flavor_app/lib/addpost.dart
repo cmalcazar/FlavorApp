@@ -8,8 +8,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'main.dart';
 import 'postprovider.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 
 import 'Recipe.dart';
 import 'post.dart';
@@ -20,6 +21,7 @@ class AddPosts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<FirebaseAuth>(context, listen: false);
     return MaterialApp(
       theme: ThemeData(
         primarySwatch: Colors.red,
@@ -37,10 +39,6 @@ class AddPosts extends StatelessWidget {
               );
             },
           ),
-          actions: [
-            //this is the settings button
-            IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
-          ],
         ),
         body: PostPage(),
       ),
@@ -65,89 +63,25 @@ class _PostPageState extends State<PostPage> {
   final GlobalKey<FormFieldState<String>> _steps = GlobalKey();
   final GlobalKey<FormFieldState<String>> _description = GlobalKey();
   final GlobalKey<FormFieldState<String>> _nutrition = GlobalKey();
-  final picker = ImagePicker();
 
   //this is the user and database variables
   late final authUser;
   late final db;
   var userData;
+  PlatformFile? imageFile;
+  UploadTask? uploadTask;
+
   int _postId = 0;
   String users = 'users';
   String r = 'recipes';
+  String ifnull =
+      'https://firebasestorage.googleapis.com/v0/b/recipeapp-3ab43.appspot.com/o/images%2F1000_F_251955356_FAQH0U1y1TZw3ZcdPGybwUkH90a3VAhb.jpg?alt=media&token=091b00f6-a4a8-4a4a-b66f-60e8978fb471&_gl=1*1dfhnga*_ga*MTM5MTUxODI4My4xNjk4NTE4MjUw*_ga_CW55HF8NVT*MTY5OTM1MTA4OS40MS4xLjE2OTkzNTQ2MzMuMTAuMC4w';
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     setUser();
-
-// Prints the u
-  }
-
-  //this for when the user uploads a photo from their phone gallery
-  Future getImageFromGallery() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    XFile? imageFile;
-    if (pickedFile != null) {
-      imageFile = XFile(pickedFile.path);
-    }
-    return imageFile;
-  }
-
-  storeFireBase( XFile? pickedImage) async{
-    final auth = Provider.of<FirebaseAuth>(context, listen: false);
-    final storage = Provider.of<FirebaseStorage>(context, listen: false);
-
-    final ref = storage.ref().child('images/${auth.currentUser!.uid}');
-    await ref.putFile(File(pickedImage!.path));
-    final url = await ref.getDownloadURL();
-    setState(() {
-      image = url;
-    });
-  }
-
-  //this is for when the user uploads a photo from their camera
-  Future getImageFromCamera() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
-    final auth = Provider.of<FirebaseAuth>(context, listen: false);
-    final storage = Provider.of<FirebaseStorage>(context, listen: false);
-    XFile? imageFile;
-    if (pickedFile != null) {
-      imageFile = XFile(pickedFile.path);
-    }
-
-    return imageFile;
-  }
-
-  //This is the options for the user to select where they want to upload their photo from
-  Future showOptions() async {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (context) => CupertinoActionSheet(
-        actions: [
-          CupertinoActionSheetAction(
-            child: Text('Photo Gallery'),
-            onPressed: () async {
-              // close the options modal
-              Navigator.of(context).pop();
-              // get image from gallery
-              XFile? temp = getImageFromGallery() as XFile?;
-              storeFireBase(temp);
-            },
-          ),
-          CupertinoActionSheetAction(
-            child: Text('Camera'),
-            onPressed: () {
-              // close the options modal
-              Navigator.of(context).pop();
-              // get image from camera
-              XFile? temp = getImageFromCamera() as XFile?;
-              storeFireBase(temp);
-            },
-          ),
-        ],
-      ),
-    );
   }
 
   //This is to get the user and database
@@ -159,18 +93,51 @@ class _PostPageState extends State<PostPage> {
     db = dbF;
   }
 
+  selectFile() async {
+    final result = await FilePicker.platform.pickFiles();
+    if (result == null) return;
+
+    setState(() {
+      imageFile = result.files.first;
+    });
+  }
+
+  uploadFile() async {
+    final post = Provider.of<PostProvider>(context, listen: false);
+    final storage = Provider.of<FirebaseStorage>(context, listen: false);
+    final path = 'images/${_recipeName.currentState!.value!}.png';
+    //File x = File(ifnull);
+    File? file = imageFile != null ? File(imageFile!.path!) : null;
+    if (file != null) {
+      final ref = storage.ref().child(path);
+      uploadTask = ref.putFile(file);
+
+      final snapshot = await uploadTask!.whenComplete(() {});
+
+      final urlDownload = await snapshot.ref.getDownloadURL();
+
+      setState(() {
+        image = urlDownload;
+        print('Image URL: $image'); // Print the image URL
+      });
+    } else {
+      image = ifnull;
+      return image;
+    }
+
+    return image;
+  }
+
   //This is to generate a random id for the recipe
   generateId() {
     var random = Random();
     int randomNumber = random.nextInt(1000000);
 
-    setState(() {
-      _postId = randomNumber;
-    });
+    return randomNumber;
   }
 
   //This is just to try to get the data from the database so that we can simulate a search
-  //and adding more recipes to an already poopulated list. Haven't figured it out
+  //and adding more recipes to an already populated list. Haven't figured it out
   //or finished it yet.
   extraData() {
     final post = Provider.of<PostProvider>(context, listen: false);
@@ -227,11 +194,10 @@ class _PostPageState extends State<PostPage> {
       //this is the poster ID
         poster: userData,
         posts: recipe));
-
+    //List<Map<String, dynamic>> jsonList = recipe.map((item) => item.toJson()).toList();
 
     db.collection(users).doc(authUser!.uid).update({'posts': recipe.toJson()});
-    db.collection(r).doc('testDELETE').set({recipe.toJson()});
-
+    db.collection(r).doc('testDELETE').set(recipe.toJson());
   }
 
   @override
@@ -241,11 +207,21 @@ class _PostPageState extends State<PostPage> {
             child: Column(
               children: [
                 //This is the image picker
+                if (imageFile != null)
+                  Container(
+                    color: Colors.red,
+                    child: Center(
+                        child: Image.file(
+                          File(imageFile!.path!),
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        )),
+                  ),
+                const SizedBox(height: 20),
                 TextButton(
-                  child: Text('Select Image'),
-                  onPressed: showOptions,
+                  child: const Text('Select Image'),
+                  onPressed: selectFile,
                 ),
-
                 //THis is the recipe name
                 TextFormField(
                   key: _recipeName,
@@ -258,10 +234,6 @@ class _PostPageState extends State<PostPage> {
                       return 'Please enter a title';
                     }
                     return null;
-                  },
-                  onFieldSubmitted: (value) {
-                    print(value);
-                    Navigator.pop(context);
                   },
                 ),
 
@@ -359,14 +331,34 @@ class _PostPageState extends State<PostPage> {
                 ),
 
                 //This is the submit button
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      //THis is to submit the post with the user displayname
-                      _submitPost(authUser!.displayName);
-                    });
-                  },
-                  child: const Text('Submit'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        var temp = await uploadFile();
+                        setState(() {
+                          _postId = generateId();
+                          image = temp;
+                        });
+                        //THis is to submit the post with the user displayname
+                        _submitPost(authUser!);
+                      },
+                      child: const Text('Submit'),
+                    ),
+                    TextButton(
+                      child: const Text("Reset"),
+                      onPressed: () => {
+                        _recipeName.currentState?.reset(),
+                        _minutes.currentState?.reset(),
+                        _description.currentState?.reset(),
+                        _ingredients.currentState?.reset(),
+                        _nutrition.currentState?.reset(),
+                        _steps.currentState?.reset(),
+                        _tags.currentState?.reset(),
+                      },
+                    ),
+                  ],
                 )
               ],
             )));

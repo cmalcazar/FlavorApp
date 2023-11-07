@@ -18,13 +18,15 @@ Future<void> main() async {
   String appId = '1:366937079655:android:9b70633b05d073c7edf9c2';
   String messagingSenderId = '366937079655';
   String projectId = 'recipeapp-3ab43';
+  String storageBucket = 'recipeapp-3ab43.appspot.com';
 
   await Firebase.initializeApp(
       options: FirebaseOptions(
           apiKey: apiKey,
           appId: appId,
           messagingSenderId: messagingSenderId,
-          projectId: projectId));
+          projectId: projectId,
+          storageBucket: storageBucket));
 
   runApp(const Login());
 }
@@ -239,6 +241,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 20.0),
             //This is the create account button
+
             ElevatedButton(
               style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(Colors.grey),
