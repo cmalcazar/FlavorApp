@@ -66,13 +66,14 @@ class _PostPageState extends State<PostPage> {
   final GlobalKey<FormFieldState<String>> _description = GlobalKey();
   final GlobalKey<FormFieldState<String>> _nutrition = GlobalKey();
   final picker = ImagePicker();
-  XFile? _imageFile;
 
   //this is the user and database variables
   late final authUser;
   late final db;
   var userData;
   int _postId = 0;
+  String users = 'users';
+  String r = 'recipes';
 
   @override
   void initState() {
@@ -85,16 +86,20 @@ class _PostPageState extends State<PostPage> {
 
   //this for when the user uploads a photo from their phone gallery
   Future getImageFromGallery() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    XFile? imageFile;
+    if (pickedFile != null) {
+      imageFile = XFile(pickedFile.path);
+    }
+    return imageFile;
+  }
+
+  storeFireBase( XFile? pickedImage) async{
     final auth = Provider.of<FirebaseAuth>(context, listen: false);
     final storage = Provider.of<FirebaseStorage>(context, listen: false);
-    setState(() {
-      if (pickedFile != null) {
-        _imageFile = XFile(pickedFile.path);
-      }
-    });
+
     final ref = storage.ref().child('images/${auth.currentUser!.uid}');
-    await ref.putFile(File(_imageFile!.path));
+    await ref.putFile(File(pickedImage!.path));
     final url = await ref.getDownloadURL();
     setState(() {
       image = url;
@@ -106,18 +111,12 @@ class _PostPageState extends State<PostPage> {
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
     final auth = Provider.of<FirebaseAuth>(context, listen: false);
     final storage = Provider.of<FirebaseStorage>(context, listen: false);
-    setState(() {
-      if (pickedFile != null) {
-        _imageFile = XFile(pickedFile.path);
-      }
-    });
-    //adds to firebase storage NOT firestore database
-    final ref = storage.ref().child('images/${auth.currentUser!.uid}');
-    await ref.putFile(File(_imageFile!.path));
-    final url = await ref.getDownloadURL();
-    setState(() {
-      image = url;
-    });
+    XFile? imageFile;
+    if (pickedFile != null) {
+      imageFile = XFile(pickedFile.path);
+    }
+
+    return imageFile;
   }
 
   //This is the options for the user to select where they want to upload their photo from
@@ -128,11 +127,12 @@ class _PostPageState extends State<PostPage> {
         actions: [
           CupertinoActionSheetAction(
             child: Text('Photo Gallery'),
-            onPressed: () {
+            onPressed: () async {
               // close the options modal
               Navigator.of(context).pop();
               // get image from gallery
-              getImageFromGallery();
+              XFile? temp = getImageFromGallery() as XFile?;
+              storeFireBase(temp);
             },
           ),
           CupertinoActionSheetAction(
@@ -141,7 +141,8 @@ class _PostPageState extends State<PostPage> {
               // close the options modal
               Navigator.of(context).pop();
               // get image from camera
-              getImageFromCamera();
+              XFile? temp = getImageFromCamera() as XFile?;
+              storeFireBase(temp);
             },
           ),
         ],
@@ -203,27 +204,34 @@ class _PostPageState extends State<PostPage> {
   //This is to submit the post to the database and add it to the list of posts
   void _submitPost(var userData) {
     final post = Provider.of<PostProvider>(context, listen: false);
-
+    //List<Recipe> recipes = [];
+    Recipe recipe = Recipe(
+      recipeName: _recipeName.currentState!.value!,
+      ingredients: _ingredients.currentState!.value!.split(',').toList(),
+      recipeId: _postId,
+      minutes: int.parse(_minutes.currentState!.value!),
+      nutrition: _nutrition.currentState!.value!
+          .split(',')
+          .map((e) => double.tryParse(e) ?? 0.0)
+          .toList(),
+      image: image,
+      description: _description.currentState!.value!,
+      tags: _tags.currentState!.value!.split(',').toList(),
+      steps: _steps.currentState!.value!.split(',').toList(),
+      canAdd: true,
+      isFavorite: false,
+    );
     generateId();
+    //recipes.add(recipe);
     post.addPost(Post(
       //this is the poster ID
         poster: userData,
-        posts: Recipe(
-          recipeName: _recipeName.currentState!.value!,
-          ingredients: _ingredients.currentState!.value!.split(',').toList(),
-          recipeId: _postId,
-          minutes: int.parse(_minutes.currentState!.value!),
-          nutrition: _nutrition.currentState!.value!
-              .split(',')
-              .map((e) => double.tryParse(e) ?? 0.0)
-              .toList(),
-          image: image,
-          description: _description.currentState!.value!,
-          tags: _tags.currentState!.value!.split(',').toList(),
-          steps: _steps.currentState!.value!.split(',').toList(),
-          canAdd: true,
-          isFavorite: false,
-        )));
+        posts: recipe));
+
+
+    db.collection(users).doc(authUser!.uid).update({'posts': recipe.toJson()});
+    db.collection(r).doc('testDELETE').set({recipe.toJson()});
+
   }
 
   @override

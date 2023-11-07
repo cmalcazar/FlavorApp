@@ -131,6 +131,7 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
                 var post = posts[index];
                 //this is the list of recipes
                 return ListTile(
+                  leading: Image.network(post.posts.image!),
                   title: Text(post.posts.recipeName),
                 );
               },
