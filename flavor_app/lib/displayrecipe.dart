@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:favorite_button/favorite_button.dart';
 
@@ -50,6 +52,8 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
 //this is the like button
   _like(var post) {
     final favs = Provider.of<FavoritesProvider>(context, listen: false);
+    final db = Provider.of<FirebaseFirestore>(context);
+    final auth = Provider.of<FirebaseAuth>(context, listen: false);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: FavoriteButton(
@@ -62,7 +66,13 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
             post.posts.canAdd = false;
           }
           favs.addFav(post);
-          print(favs.recipes.length);
+          List<Map<String, dynamic>> jsonList =
+          favs.recipes.map((item) => item.posts.toJson()).toList();
+          var authUser = auth.currentUser;
+          db
+              .collection('users')
+              .doc(authUser!.uid)
+              .update({'favorites': jsonList});
         },
       ),
     );

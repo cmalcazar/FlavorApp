@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:favorite_button/favorite_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,7 +32,9 @@ class UserFavoritesPage extends StatefulWidget {
 class _UserFavoritesPageState extends State<UserFavoritesPage> {
   @override
   Widget build(BuildContext context) {
+    final db = Provider.of<FirebaseFirestore>(context);
     final provider = Provider.of<FavoritesProvider>(context, listen: false);
+    final auth = Provider.of<FirebaseAuth>(context, listen: false);
     return Scaffold(
       body: Column(
         children: [
@@ -47,6 +51,7 @@ class _UserFavoritesPageState extends State<UserFavoritesPage> {
                         //This is the list of recipes that the user has favorited
                         //via list tile
                         ListTile(
+                          leading: Image.network(post.posts.image!),
                           title: Text(post.posts.recipeName),
                           subtitle: Text(post.posts.description),
                           trailing: FavoriteButton(
@@ -56,9 +61,17 @@ class _UserFavoritesPageState extends State<UserFavoritesPage> {
                             valueChanged: (fav) {
                               post.posts.isFavorite = fav;
                               if (fav) {
-                                post.posts.canAdd = false;
+                                post.posts.canAdd = !fav;
                               }
                               provider.addFav(post);
+                              List<Map<String, dynamic>> jsonList = provider.recipes
+                                  .map((item) => item.posts.toJson())
+                                  .toList();
+                              var authUser = auth.currentUser;
+                              db
+                                  .collection('users')
+                                  .doc(authUser!.uid)
+                                  .update({'favorites': jsonList});
                             },
                           ),
                           onTap: () {},

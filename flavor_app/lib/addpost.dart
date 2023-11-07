@@ -171,7 +171,6 @@ class _PostPageState extends State<PostPage> {
   //This is to submit the post to the database and add it to the list of posts
   void _submitPost(var userData) {
     final post = Provider.of<PostProvider>(context, listen: false);
-    //List<Recipe> recipes = [];
     Recipe recipe = Recipe(
       recipeName: _recipeName.currentState!.value!,
       ingredients: _ingredients.currentState!.value!.split(',').toList(),
@@ -189,15 +188,15 @@ class _PostPageState extends State<PostPage> {
       isFavorite: false,
     );
     generateId();
-    //recipes.add(recipe);
     post.addPost(Post(
       //this is the poster ID
         poster: userData,
         posts: recipe));
-    //List<Map<String, dynamic>> jsonList = recipe.map((item) => item.toJson()).toList();
+    List<Map<String, dynamic>> jsonList =
+    post.posts.map((item) => item.posts.toJson()).toList();
 
-    db.collection(users).doc(authUser!.uid).update({'posts': recipe.toJson()});
-    db.collection(r).doc('testDELETE').set(recipe.toJson());
+    db.collection(users).doc(authUser!.uid).update({'posts': jsonList});
+    db.collection(r).doc(_postId.toString()).set(recipe.toJson());
   }
 
   @override
