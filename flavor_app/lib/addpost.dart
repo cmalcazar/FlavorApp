@@ -8,7 +8,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'main.dart';
 import 'postprovider.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -106,7 +105,6 @@ class _PostPageState extends State<PostPage> {
     final post = Provider.of<PostProvider>(context, listen: false);
     final storage = Provider.of<FirebaseStorage>(context, listen: false);
     final path = 'images/${_recipeName.currentState!.value!}.png';
-    //File x = File(ifnull);
     File? file = imageFile != null ? File(imageFile!.path!) : null;
     if (file != null) {
       final ref = storage.ref().child(path);
@@ -131,7 +129,7 @@ class _PostPageState extends State<PostPage> {
   //This is to generate a random id for the recipe
   generateId() {
     var random = Random();
-    int randomNumber = random.nextInt(1000000);
+    int randomNumber = random.nextInt(1000000) + 200;
 
     return randomNumber;
   }
@@ -197,6 +195,7 @@ class _PostPageState extends State<PostPage> {
 
     db.collection(users).doc(authUser!.uid).update({'posts': jsonList});
     db.collection(r).doc(_postId.toString()).set(recipe.toJson());
+    //db.collection('posts').doc(authUser!.uid).update({'posts': jsonList});
   }
 
   @override

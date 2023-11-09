@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'favoriteProvider.dart';
 import 'main.dart';
 
 class CreateAccount extends StatelessWidget {
@@ -31,6 +29,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   final GlobalKey<FormFieldState<String>> _email = GlobalKey();
   final GlobalKey<FormFieldState<String>> _pass = GlobalKey();
   final GlobalKey<FormFieldState<String>> _user = GlobalKey();
+  final GlobalKey<FormFieldState<String>> _loc = GlobalKey();
 
   success() {
     return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -61,6 +60,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           'email': _email.currentState!.value!,
           'favorites': [],
           'posts': [],
+          'location': _loc.currentState!.value!,
         });
         success();
       }
@@ -172,6 +172,23 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Password is required';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              key: _loc,
+              autocorrect: true,
+              decoration: const InputDecoration(
+                labelText: 'Location',
+                labelStyle: TextStyle(fontSize: 20),
+                hintText: 'ex. New York, NY',
+                hintStyle: TextStyle(fontSize: 20),
+                icon: Icon(Icons.location_on),
+              ),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Location is required';
                 }
                 return null;
               },
