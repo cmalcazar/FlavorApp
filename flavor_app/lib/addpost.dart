@@ -67,6 +67,7 @@ class _PostPageState extends State<PostPage> {
   late final authUser;
   late final db;
   var userData;
+  var data;
   PlatformFile? imageFile;
   UploadTask? uploadTask;
 
@@ -88,7 +89,7 @@ class _PostPageState extends State<PostPage> {
     final auth = Provider.of<FirebaseAuth>(context, listen: false);
     final dbF = Provider.of<FirebaseFirestore>(context, listen: false);
     authUser = auth.currentUser;
-    print(authUser!.email);
+    print(authUser!);
     db = dbF;
   }
 
@@ -134,41 +135,17 @@ class _PostPageState extends State<PostPage> {
     return randomNumber;
   }
 
-  //This is just to try to get the data from the database so that we can simulate a search
-  //and adding more recipes to an already populated list. Haven't figured it out
-  //or finished it yet.
-  extraData() {
-    final post = Provider.of<PostProvider>(context, listen: false);
-
-    for (int i = 0; i < 10; i++) {
-      FutureBuilder<DocumentSnapshot>(
-        future: db.collection('recipes').doc(i.toString()).get(),
-        builder:
-            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return const Text("Something went wrong");
-          }
-
-          if (snapshot.hasData && !snapshot.data!.exists) {
-            return const Text("Document does not exist");
-          }
-
-          if (snapshot.connectionState == ConnectionState.done) {
-            return const Text(
-              "Done",
-              style: TextStyle(fontSize: 30),
-              textAlign: TextAlign.left,
-            );
-          }
-          return const CircularProgressIndicator();
-        },
-      );
-    }
-  }
-
   //This is to submit the post to the database and add it to the list of posts
-  void _submitPost(var userData) {
+  void _submitPost(var userData) async {
+    var data;
     final post = Provider.of<PostProvider>(context, listen: false);
+
+    // Add the await keyword to wait for the get() method to complete
+    var querySnapshot = await db.collection('users').doc(authUser!.uid).get();
+
+    // Now you can use the data
+    data = querySnapshot.data();
+
     Recipe recipe = Recipe(
       recipeName: _recipeName.currentState!.value!,
       ingredients: _ingredients.currentState!.value!.split(',').toList(),
@@ -184,18 +161,22 @@ class _PostPageState extends State<PostPage> {
       steps: _steps.currentState!.value!.split(',').toList(),
       canAdd: true,
       isFavorite: false,
+      location: data['location'],
     );
     generateId();
-    post.addPost(Post(
-      //this is the poster ID
-        poster: userData,
-        posts: recipe));
+
+    setState(() {
+      post.addPost(Post(
+        //this is the poster ID
+          poster: userData,
+          posts: recipe));
+    });
+
     List<Map<String, dynamic>> jsonList =
     post.posts.map((item) => item.posts.toJson()).toList();
 
-    db.collection(users).doc(authUser!.uid).update({'posts': jsonList});
     db.collection(r).doc(_postId.toString()).set(recipe.toJson());
-    //db.collection('posts').doc(authUser!.uid).update({'posts': jsonList});
+    db.collection('posts').doc(authUser!.uid).update({'posts': jsonList});
   }
 
   @override
@@ -217,8 +198,8 @@ class _PostPageState extends State<PostPage> {
                   ),
                 const SizedBox(height: 20),
                 TextButton(
-                  child: const Text('Select Image'),
                   onPressed: selectFile,
+                  child: const Text('Select Image'),
                 ),
                 //THis is the recipe name
                 TextFormField(
@@ -339,6 +320,7 @@ class _PostPageState extends State<PostPage> {
                           _postId = generateId();
                           image = temp;
                         });
+                        print(authUser!);
                         //THis is to submit the post with the user displayname
                         _submitPost(authUser!);
                       },

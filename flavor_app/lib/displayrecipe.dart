@@ -4,16 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:favorite_button/favorite_button.dart';
 
 import 'package:provider/provider.dart';
+import 'Recipe.dart';
 import 'addpost.dart';
 import 'favoriteProvider.dart';
 
 import 'post.dart';
 import 'postprovider.dart';
 import 'recipepage.dart';
-
-//1. create post collection
-//2. different display pages
-//3. remove post from the user collection
 
 //this is the page where the user can view the recipes as a timeline
 //might change it to a list time so you can just click and it'll show who uploaded it and the recipe
@@ -40,18 +37,63 @@ class DisplayRecipePage extends StatefulWidget {
 }
 
 class _DisplayRecipeState extends State<DisplayRecipePage> {
+  final recipeSearch = TextEditingController();
+
   late List<Post> posts = [];
+  late List<Post> recipes = [];
+  late List<Post> recipeList = [];
+
   late final provider;
+  late final db;
+  late final auth;
   var recipe;
+  var data;
+  String ifnull =
+      'https://firebasestorage.googleapis.com/v0/b/recipeapp-3ab43.appspot.com/o/images%2F1000_F_251955356_FAQH0U1y1TZw3ZcdPGybwUkH90a3VAhb.jpg?alt=media&token=091b00f6-a4a8-4a4a-b66f-60e8978fb471&_gl=1*1dfhnga*_ga*MTM5MTUxODI4My4xNjk4NTE4MjUw*_ga_CW55HF8NVT*MTY5OTM1MTA4OS40MS4xLjE2OTkzNTQ2MzMuMTAuMC4w';
 
   //this is the method that will be called when the user taps on the bottom navigator
   @override
   void initState() {
     super.initState();
     provider = Provider.of<PostProvider>(context, listen: false);
-    posts = provider.posts;
+    db = Provider.of<FirebaseFirestore>(context, listen: false);
+    auth = Provider.of<FirebaseAuth>(context, listen: false);
 
-    print(posts.length);
+    extraData();
+  }
+
+  //This is just to try to get the data from the database so that we can simulate a search
+  //and adding more recipes to an already populated list. Haven't figured it out
+  //or finished it yet.
+  extraData() async {
+    setState(() {
+      posts = provider.posts;
+    });
+    var querySnapshot =
+    await db.collection('users').doc(auth.currentUser!.uid).get();
+    var uData = querySnapshot.data()!;
+    db.collection('recipes').get().then((querySnapshot) {
+      querySnapshot.docs.forEach((result) {
+        recipe = result.data();
+        setState(() {
+          data = Post.fromJson2(auth.currentUser, recipe);
+          if (!provider.posts
+              .any((post) => post.posts.recipeName == data.posts.recipeName)) {
+            provider.addPost(data);
+          }
+
+          recipes = provider.posts
+              .where((recipe) =>
+          recipe.posts.location == uData['location'] ||
+              recipe.posts.location == null)
+              .toList();
+        });
+
+        recipeList = recipes;
+        print('recipeList: ${recipeList.length}');
+        print('posts: ${posts.length}');
+      });
+    });
   }
 
 //this is the like button
@@ -83,6 +125,21 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
     );
   }
 
+  void searchRecipes(String query) {
+    //Searches and creates new list of games that matches the query String
+    //everytime the text field is changed
+    final suggestions = recipes.where((recipe) {
+      final recipeName = recipe.posts.recipeName.toLowerCase();
+      final input = query.toLowerCase();
+
+      //return the instance that == the query String
+      return recipeName.contains(input);
+    }).toList();
+
+    //sets the state back to gameList to refill the list of previous games
+    setState(() => recipeList = suggestions);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,15 +154,29 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
           },
           child: const Icon(Icons.add)),
       body: Column(children: [
+        SizedBox(
+          height: 35,
+          child: TextFormField(
+            controller: recipeSearch,
+            decoration: InputDecoration(
+                prefix: const Icon(Icons.search),
+                hintText: 'Recipe Name',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: const BorderSide(color: Colors.black),
+                )),
+            onChanged: searchRecipes,
+          ),
+        ),
         Expanded(
             child: ListView.builder(
-              itemCount: posts.length,
+              itemCount: recipeList.length,
               itemBuilder: (BuildContext context, int index) {
-                var post = posts[index];
+                var post = recipeList[index];
                 //this is the list of recipes
                 return ListTile(
                   leading: Image.network(
-                    post.posts.image!,
+                    post.posts.image ?? ifnull,
                     fit: BoxFit.cover,
                   ),
                   title: Text(post.posts.recipeName),
