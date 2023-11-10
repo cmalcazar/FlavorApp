@@ -59,7 +59,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           'username': _user.currentState!.value!,
           'email': _email.currentState!.value!,
           'favorites': [],
-          'posts': [],
           'location': _loc.currentState!.value!,
         });
         success();

@@ -18,7 +18,7 @@ class FavoritesProvider extends ChangeNotifier {
     //calls method to check if the character is a favorite
     final isFav = recipe.posts.isFavorite;
     if (isFav!) {
-      _recipeFav.add(recipe);
+      _recipeFav.insert(0, recipe);
 
       //if theres already a character in the list remove it
     } else if (!recipe.posts.canAdd!) {

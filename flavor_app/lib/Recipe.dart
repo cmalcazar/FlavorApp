@@ -12,6 +12,7 @@ class Recipe {
   bool? isFavorite;
   bool? canAdd;
   List<String>? reviews = [];
+  String? location;
   Recipe(
       {required this.recipeName,
         required this.recipeId,
@@ -23,29 +24,38 @@ class Recipe {
         required this.description,
         this.image,
         this.isFavorite,
-        this.canAdd});
+        this.canAdd,
+        this.location});
 
   //this is the method that converts the json data to a recipe object
   factory Recipe.fromJson(Map<String, dynamic> json) {
     return Recipe(
-        recipeName: json['title'],
-        recipeId: json['id'],
+        recipeName: json['recipeName'],
+        recipeId: json['recipeID'],
         minutes: json['minutes'],
-        nutrition: json['nutrition'],
-        ingredients: json['ingredients'],
-        steps: json['steps'],
-        tags: json['tags'],
+        nutrition: (json['nutrition'] is List)
+            ? json['nutrition']
+            .map((e) => double.tryParse(e.toString()) ?? 0.0)
+            .toList()
+            .cast<double>()
+            : [],
+        ingredients: json['ingredients'] is List
+            ? json['ingredients'].cast<String>()
+            : [],
+        steps: json['steps'] is List ? json['steps'].cast<String>() : [],
+        tags: json['tags'] is List ? json['tags'].cast<String>() : [],
         description: json['description'],
         image: json['image'],
         isFavorite: json['isFavorite'],
-        canAdd: json['canAdd']);
+        canAdd: json['canAdd'],
+        location: json['location']);
   }
 
   //this is the method that converts the recipe object to json data
   Map<String, dynamic> toJson() {
     return {
-      'title': recipeName,
-      'id': recipeId,
+      'recipeName': recipeName,
+      'recipeID': recipeId,
       'minutes': minutes,
       'nutrition': nutrition,
       'ingredients': ingredients,
