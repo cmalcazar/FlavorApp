@@ -179,6 +179,12 @@ class _PostPageState extends State<PostPage> {
     db.collection('posts').doc(authUser!.uid).update({'posts': jsonList});
   }
 
+  showSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('Post Added!'),
+      backgroundColor: Colors.green,
+    ));
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -323,6 +329,7 @@ class _PostPageState extends State<PostPage> {
                         print(authUser!);
                         //THis is to submit the post with the user displayname
                         _submitPost(authUser!);
+                        showSnackBar();
                       },
                       child: const Text('Submit'),
                     ),
