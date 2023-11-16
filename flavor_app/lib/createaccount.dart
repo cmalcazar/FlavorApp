@@ -51,7 +51,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       User? user = userCredential.user;
       user!.updateDisplayName(_user.currentState!.value!);
 
-      if (user != null) {
+      if (userCredential.additionalUserInfo!.isNewUser) {
         print('Successfully created an account!');
         print('User ID: ${user.uid}');
         print('Email: ${user.email}');
@@ -60,6 +60,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           'email': _email.currentState!.value!,
           'favorites': [],
           'location': _loc.currentState!.value!,
+          'uid': user.uid,
         });
         success();
       }
