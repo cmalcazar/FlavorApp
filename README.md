@@ -10,6 +10,8 @@ In the terminal, run the following commands:
 ```
 flutter pub get
 flutter run
+// If it asks you for enabling multidex
+Y 
 
 ```
 
