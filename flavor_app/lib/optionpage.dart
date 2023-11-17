@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'displayRecipe.dart';
 import 'userfavorites.dart';
+import 'userProfileScreen.dart';
 
 import 'main.dart';
 import 'search.dart';
@@ -31,6 +32,22 @@ class OptionPage extends StatelessWidget {
                       'Menu',
                       style: TextStyle(fontSize: 30, color: Colors.white),
                     )),
+                ListTile(
+                  leading: const Icon(
+                    Icons.account_circle,
+                    color: Colors.red,
+                    opticalSize: 10.5,
+                  ),
+                  title: const Text(
+                    'My Profile',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  onTap: () {
+                    Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => UserProfileScreen()),
+                    );
+                  },
+                ),
                 ListTile(
                   leading: const Icon(
                     Icons.exit_to_app_sharp,
