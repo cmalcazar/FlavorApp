@@ -14,44 +14,53 @@ class recipeDetails extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Recipe Details'),
+        title: Text(
+          recipe['recipeName']?.toString()?.toUpperCase()?.trim() ?? ' ',
+        ),
       ),
-      body: SingleChildScrollView(child: Center(
-        child: Column(
-          children: [
-            Text(recipe['recipeName'], style: TextStyle(fontSize: 50)),
-            Image.network(
-              recipe['image'] ?? ifnull,
-              fit: BoxFit.cover,
-            ),
-            // Display ingredients and steps side by side
-            Row(
-              children: [
-                // Ingredients on the left
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              Image.network(
+                recipe['image'] ?? ifnull,
+                fit: BoxFit.cover,
+              ),
+              // Display recipe description, ingredients, and steps
+              Column(
+                children: [
+                  // Recipe Description
+                  Text(
+                    '',
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    recipe['description'] ?? 'No description available',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  // Ingredients
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text('Ingredients:', style: TextStyle(fontSize: 30,  fontWeight: FontWeight.bold)),
+                      Text('Ingredients:', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold,)),
                       for (var ingredient in ingredients) Text(ingredient),
                     ],
                   ),
-                ),
-                // Steps on the right
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  // Steps
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text('Steps:', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-                      for (var step in steps) Text(step),
+                      Text('Steps:', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold,)),
+                      for (var i = 0; i < steps.length; i++)
+                        Text('${i + 1}. ${steps[i]}'),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
-      ), ),
+      ),
     );
   }
 }
