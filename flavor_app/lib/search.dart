@@ -117,7 +117,7 @@ class _SearchPagesState extends State<SearchPages> {
                       controller: minutesToCookController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: 'Minutes to Cook',
+                        hintText: 'Minutes to Cook',
                       ),
                     ),
                   ),
@@ -126,7 +126,7 @@ class _SearchPagesState extends State<SearchPages> {
                       child: TextFormField(
                         controller: ingredientPreferenceControllers[i],
                         decoration: InputDecoration(
-                          labelText: 'Ingredient Preference ${i + 1}',
+                          hintText: 'Ingredient Preference ${i + 1}',
                         ),
                       ),
                     ),
