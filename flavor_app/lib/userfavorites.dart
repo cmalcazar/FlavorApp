@@ -95,54 +95,72 @@ class _UserFavoritesPageState extends State<UserFavoritesPage> {
             ),
           ),
           Expanded(
-            //This is the list of recipes that the user has favorited
-              child: ListView.builder(
-                itemCount: favList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  var post = favList[index];
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+              ),
+              itemCount: favList.length,
+              itemBuilder: (BuildContext context, int index) {
+                var post = favList[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ShowRecipe(post: post),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    elevation: 2.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        //This is the list of recipes that the user has favorited
-                        //via list tile
-                        ListTile(
-                          leading: Image.network(post.posts.image ?? ifnull),
-                          title: Text(post.posts.recipeName),
-                          subtitle: Text(post.posts.description),
-                          trailing: FavoriteButton(
-                            iconColor: Colors.pinkAccent.shade400,
-                            iconSize: 35.5,
-                            isFavorite: post.posts.isFavorite,
-                            valueChanged: (fav) {
-                              post.posts.isFavorite = fav;
-                              if (fav) {
-                                post.posts.canAdd = !fav;
-                              }
-                              provider.addFav(post);
-                              List<Map<String, dynamic>> jsonList = provider.recipes
-                                  .map((item) => item.posts.toJson())
-                                  .toList();
-                              var authUser = auth.currentUser;
-                              db
-                                  .collection('users')
-                                  .doc(authUser!.uid)
-                                  .update({'favorites': jsonList});
-                            },
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(8.0),
+                              topRight: Radius.circular(8.0),
+                            ),
+                            child: Image.network(
+                              post.posts.image ?? ifnull,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ShowRecipe(post: post)),
-                            );
-                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                post.posts.recipeName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                              const SizedBox(height: 4.0),
+                              Text(
+                                post.posts.description,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  );
-                },
-              ))
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
