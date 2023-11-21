@@ -6,6 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 class Post {
   User? poster;
   Recipe posts;
+  int isLiked = 0;
+  int isDisliked = 0;
 
   Post({required this.poster, required this.posts});
 
