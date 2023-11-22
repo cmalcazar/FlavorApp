@@ -88,7 +88,7 @@ class _SearchPagesState extends State<SearchPages> {
 
         final meetsCookingTime = recipeCookingTime <= minutesToCook;
         //print("Meets cooking time! $meetsCookingTime");
-        final hasMatchingIngredients = ingredientPreferences.any((ingredient) => recipeIngredients.contains(ingredient));
+        final hasMatchingIngredients = ingredientPreferences.every((ingredient) => recipeIngredients.contains(ingredient)); //every ingredient must match
         print("has Matching ingredients $hasMatchingIngredients");
         return meetsCookingTime && hasMatchingIngredients;
       })
@@ -103,70 +103,93 @@ class _SearchPagesState extends State<SearchPages> {
     });
   }
 
-    @override
-    Widget build(BuildContext context) {
-      return Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            SizedBox(
-              height: 35,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: minutesToCookController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        hintText: 'Minutes to Cook',
-                      ),
-                    ),
-                  ),
-                  for (int i = 0; i < 1; i++)
-                    Expanded(
-                      child: TextFormField(
-                        controller: ingredientPreferenceControllers[i],
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          SizedBox(
+            height: 116,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: minutesToCookController,
+                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
-                          hintText: 'Ingredient Preference ${i + 1}',
+                          hintText: 'Minutes to Cook',
                         ),
                       ),
-                    ),
-                ],
-              ),
+                      SizedBox(height: 20), // Adjust as needed for spacing
+                      TextFormField(
+                        controller: ingredientPreferenceControllers[0],
+                        decoration: InputDecoration(
+                          hintText: 'Ingredient Preference 1',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: ingredientPreferenceControllers[1],
+                        decoration: InputDecoration(
+                          hintText: 'Ingredient Preference 2',
+                        ),
+                      ),
+                      SizedBox(height: 20), // Adjust as needed for spacing
+                      TextFormField(
+                        controller: ingredientPreferenceControllers[2],
+                        decoration: InputDecoration(
+                          hintText: 'Ingredient Preference 3',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: filterRecipes,
-              child: Text('Filter Recipes'),
+          ),
+          SizedBox(height: 100), // Adjust as needed for spacing
+          ElevatedButton(
+            onPressed: filterRecipes,
+            child: Text('Filter Recipes'),
+          ),
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: recipeList.length,
+              itemBuilder: (context, index) {
+                final r = recipeList[index];
+                return ListTile(
+                  leading: Image.network(
+                    r['image'] ?? ifnull,
+                    fit: BoxFit.cover,
+                  ),
+                  title: Text(r['recipeName']),
+                  onTap: () {
+                    // Navigate to the Recipe Details screen when tapped
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => recipeDetails(r.data()),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
-            Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: recipeList.length,
-                itemBuilder: (context, index) {
-                  final r = recipeList[index];
-                  return ListTile(
-                    leading: Image.network(
-                      r['image'] ?? ifnull,
-                      fit: BoxFit.cover,
-                    ),
-                    title: Text(r['recipeName']),
-                    //trailing: _like(r),
-                      onTap: () {
-                        // Navigate to the Recipe Details screen when tapped
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => recipeDetails(r.data()),
-                          ),
-                        );
-                      },
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      );
-    }
+          ),
+        ],
+      ),
+    );
+  }
   }
