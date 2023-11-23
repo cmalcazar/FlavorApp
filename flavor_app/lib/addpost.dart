@@ -70,6 +70,7 @@ class _PostPageState extends State<PostPage> {
   var data;
   PlatformFile? imageFile;
   UploadTask? uploadTask;
+  late int recipeLength;
 
   int _postId = 0;
   String users = 'users';
@@ -103,7 +104,6 @@ class _PostPageState extends State<PostPage> {
   }
 
   uploadFile() async {
-    final post = Provider.of<PostProvider>(context, listen: false);
     final storage = Provider.of<FirebaseStorage>(context, listen: false);
     final path = 'images/${_recipeName.currentState!.value!}.png';
     File? file = imageFile != null ? File(imageFile!.path!) : null;
@@ -135,8 +135,15 @@ class _PostPageState extends State<PostPage> {
     return randomNumber;
   }
 
+  Future<int> getCollectionLength() async {
+    QuerySnapshot _myDoc = await db.collection('posts').get();
+    List<DocumentSnapshot> _myDocCount = _myDoc.docs;
+    return _myDocCount.length;
+  }
+
   //This is to submit the post to the database and add it to the list of posts
-  void _submitPost(var userData) async {
+  void _submitPost() async {
+    recipeLength = await getCollectionLength();
     var data;
     final post = Provider.of<PostProvider>(context, listen: false);
 
@@ -162,21 +169,22 @@ class _PostPageState extends State<PostPage> {
       canAdd: true,
       isFavorite: false,
       location: data['location'],
+
     );
     generateId();
 
     setState(() {
       post.addPost(Post(
         //this is the poster ID
-          poster: userData,
+          posterID: authUser!.uid,
           posts: recipe));
     });
 
-    List<Map<String, dynamic>> jsonList =
-    post.posts.map((item) => item.posts.toJson()).toList();
-
     db.collection(r).doc(_postId.toString()).set(recipe.toJson());
-    db.collection('posts').doc(authUser!.uid).update({'posts': jsonList});
+    db
+        .collection('posts')
+        .doc((recipeLength + 1).toString())
+        .set({'posts': recipe.toJson(), 'posterID': authUser!.uid});
   }
 
   showSnackBar() {
@@ -185,6 +193,7 @@ class _PostPageState extends State<PostPage> {
       backgroundColor: Colors.green,
     ));
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -328,7 +337,7 @@ class _PostPageState extends State<PostPage> {
                         });
                         print(authUser!);
                         //THis is to submit the post with the user displayname
-                        _submitPost(authUser!);
+                        _submitPost();
                         showSnackBar();
                       },
                       child: const Text('Submit'),
