@@ -109,7 +109,9 @@ class _UserFavoritesPageState extends State<UserFavoritesPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ShowRecipe(post: post),
+                        builder: (context) => ShowRecipe(
+                          post: post,index: index,
+                        ),
                       ),
                     );
                   },

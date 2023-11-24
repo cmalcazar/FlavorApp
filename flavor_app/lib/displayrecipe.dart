@@ -121,8 +121,7 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
         if (documentSnapshot.exists) {
           recipe = documentSnapshot.data();
           setState(() {
-            //data = Post.fromJson(recipe);
-            data = Post.fromJson2(recipe['posterID'], recipe['posts']);
+            data = Post.fromJson(recipe);
             if (!provider.posts.any(
                     (post) => post.posts.recipeName == data.posts.recipeName)) {
               provider.addPost(data);
@@ -239,7 +238,7 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => ShowRecipe(
-                            post: post,
+                            post: post,index: index,
                           )),
                     );
                   },

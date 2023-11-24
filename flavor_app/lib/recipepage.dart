@@ -7,17 +7,14 @@ import 'package:like_button/like_button.dart';
 import 'package:provider/provider.dart';
 import 'favoriteProvider.dart';
 import 'post.dart';
-import 'ratingprovider.dart';
 
 //this is the page where the user can view the recipes as a timeline
 //might change it to a list time so you can just click and it'll show who uploaded it and the recipe
 
 class ShowRecipe extends StatelessWidget {
   Post post;
-  ShowRecipe({
-    required this.post,
-    super.key,
-  });
+  int index;
+  ShowRecipe({required this.post, super.key, required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +34,7 @@ class ShowRecipe extends StatelessWidget {
         ),
         body: ShowRecipePage(
           post: post,
+          index: index,
         ),
       ),
     );
@@ -45,14 +43,17 @@ class ShowRecipe extends StatelessWidget {
 
 class ShowRecipePage extends StatefulWidget {
   Post post;
-  ShowRecipePage({required this.post, super.key});
+  int index;
+  ShowRecipePage({required this.post, super.key, required this.index});
 
   @override
-  State<ShowRecipePage> createState() => _ShowRecipeState(post: post);
+  State<ShowRecipePage> createState() =>
+      _ShowRecipeState(post: post, index: index);
 }
 
 class _ShowRecipeState extends State<ShowRecipePage> {
   Post post;
+  int index;
   var userData;
   late final db;
   String defaultPhoto =
@@ -60,7 +61,7 @@ class _ShowRecipeState extends State<ShowRecipePage> {
   String ifnull =
       'https://firebasestorage.googleapis.com/v0/b/recipeapp-3ab43.appspot.com/o/images%2F1000_F_251955356_FAQH0U1y1TZw3ZcdPGybwUkH90a3VAhb.jpg?alt=media&token=091b00f6-a4a8-4a4a-b66f-60e8978fb471&_gl=1*1dfhnga*_ga*MTM5MTUxODI4My4xNjk4NTE4MjUw*_ga_CW55HF8NVT*MTY5OTM1MTA4OS40MS4xLjE2OTkzNTQ2MzMuMTAuMC4w';
 
-  _ShowRecipeState({required this.post});
+  _ShowRecipeState({required this.post, required this.index});
 
   @override
   void initState() {
@@ -130,7 +131,7 @@ class _ShowRecipeState extends State<ShowRecipePage> {
       future: db.collection('users').doc(post.posterID).get(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        print('posterID: ${post.posterID}'); // Print the posterID
+        // print('posterID: ${post.posterID}'); // Print the posterID
 
         if (snapshot.hasError) {
           return const Text("Something went wrong");
@@ -142,7 +143,7 @@ class _ShowRecipeState extends State<ShowRecipePage> {
 
         if (snapshot.connectionState == ConnectionState.done) {
           userData = snapshot.data!.data() as Map<String, dynamic>;
-          print('User data: $userData'); // Print the user data
+          // print('User data: $userData'); // Print the user data
 
           return _postAuthor();
         }
@@ -150,6 +151,14 @@ class _ShowRecipeState extends State<ShowRecipePage> {
         return const CircularProgressIndicator();
       },
     );
+  }
+
+  update() async {
+    print(index);
+    await db.collection('posts').doc((index + 1).toString()).update({
+      'likedCount': post.likedCount,
+      'dislikedCount': post.dislikedCount,
+    });
   }
 
   @override
@@ -177,6 +186,7 @@ class _ShowRecipeState extends State<ShowRecipePage> {
                   dotPrimaryColor: Color.fromARGB(255, 252, 3, 3),
                   dotSecondaryColor: Color.fromARGB(255, 255, 116, 116),
                 ),
+                isLiked: post.isLiked,
                 likeBuilder: (bool isLiked) {
                   return Icon(
                     Icons.thumb_up,
@@ -184,7 +194,29 @@ class _ShowRecipeState extends State<ShowRecipePage> {
                     size: 30.0,
                   );
                 },
-                likeCount: post.isLiked,
+                likeCount: post.likedCount,
+                onTap: (bool isLiked) {
+                  setState(() {
+                    if (isLiked) {
+                      if (post.likedCount > 0) {
+                        post.likedCount--;
+                      }
+                      post.isLiked = false;
+                    } else {
+                      post.likedCount++;
+                      post.isLiked = true;
+                      if (post.isDisliked) {
+                        // If the post is currently disliked
+                        if (post.dislikedCount > 0) {
+                          post.dislikedCount--; // Decrease the dislikedCount
+                        }
+                        post.isDisliked = false; // Set isDisliked to false
+                      }
+                    }
+                  });
+                  update();
+                  return Future.value(post.isLiked);
+                },
               ),
               const SizedBox(
                 width: 10,
@@ -198,14 +230,38 @@ class _ShowRecipeState extends State<ShowRecipePage> {
                   dotPrimaryColor: Color.fromARGB(255, 252, 3, 3),
                   dotSecondaryColor: Color.fromARGB(255, 255, 116, 116),
                 ),
-                likeBuilder: (bool isLiked) {
+                isLiked: post.isDisliked,
+                likeBuilder: (bool isDisliked) {
                   return Icon(
                     Icons.thumb_down,
-                    color: isLiked ? Colors.red : Colors.grey,
+                    color: isDisliked ? Colors.red : Colors.grey,
                     size: 30.0,
                   );
                 },
-                likeCount: post.isLiked,
+                likeCount: post.dislikedCount,
+                onTap: (bool isDisliked) {
+                  setState(() {
+                    if (isDisliked) {
+                      if (post.dislikedCount > 0) {
+                        post.dislikedCount--;
+                      }
+                      post.isDisliked = false;
+                    } else {
+                      post.dislikedCount++;
+                      post.isDisliked = true;
+                      if (post.isLiked) {
+                        // If the post is currently liked
+                        if (post.likedCount > 0) {
+                          post.likedCount--; // Decrease the likedCount
+                        }
+                        post.isLiked = false; // Set isLiked to false
+                      }
+                    }
+                  });
+                  update();
+
+                  return Future.value(post.isDisliked);
+                },
               ),
               const SizedBox(
                 width: 10,
