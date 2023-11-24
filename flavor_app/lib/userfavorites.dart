@@ -75,6 +75,35 @@ class _UserFavoritesPageState extends State<UserFavoritesPage> {
     setState(() => favList = suggestions);
   }
 
+//this is the like button
+  _like(var post) {
+    final favs = Provider.of<FavoritesProvider>(context, listen: false);
+    final db = Provider.of<FirebaseFirestore>(context);
+    final auth = Provider.of<FirebaseAuth>(context, listen: false);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: FavoriteButton(
+        iconColor: Colors.pinkAccent.shade400,
+        iconSize: 35.5,
+        isFavorite: post.posts.isFavorite,
+        valueChanged: (fav) {
+          post.posts.isFavorite = fav;
+          if (fav) {
+            post.posts.canAdd = false;
+          }
+          favs.addFav(post);
+          List<Map<String, dynamic>> jsonList =
+          favs.recipes.map((item) => item.posts.toJson()).toList();
+          var authUser = auth.currentUser;
+          db
+              .collection('users')
+              .doc(authUser!.uid)
+              .update({'favorites': jsonList});
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,7 +138,10 @@ class _UserFavoritesPageState extends State<UserFavoritesPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ShowRecipe(post: post),
+                        builder: (context) => ShowRecipe(
+                          post: post,
+                          index: index,
+                        ),
                       ),
                     );
                   },
@@ -118,44 +150,49 @@ class _UserFavoritesPageState extends State<UserFavoritesPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(8.0),
-                              topRight: Radius.circular(8.0),
-                            ),
-                            child: Image.network(
-                              post.posts.image ?? ifnull,
-                              fit: BoxFit.cover,
+                    child: Stack(alignment: Alignment.bottomRight, children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8.0),
+                                topRight: Radius.circular(8.0),
+                              ),
+                              child: Image.network(
+                                post.posts.image ?? ifnull,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                post.posts.recipeName,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16.0,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  post.posts.recipeName,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16.0,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 4.0),
-                              Text(
-                                post.posts.description,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                                const SizedBox(height: 4.0),
+                                Text(
+                                  post.posts.description,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: _like(post)),
+                    ]),
                   ),
                 );
               },

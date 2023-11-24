@@ -68,6 +68,7 @@ class _PostPageState extends State<PostPage> {
   late final db;
   var userData;
   var data;
+  late int recipeLength;
   PlatformFile? imageFile;
   UploadTask? uploadTask;
   late int recipeLength;
@@ -168,23 +169,30 @@ class _PostPageState extends State<PostPage> {
       steps: _steps.currentState!.value!.split(',').toList(),
       canAdd: true,
       isFavorite: false,
-      location: data['location'],
-
     );
     generateId();
 
     setState(() {
       post.addPost(Post(
         //this is the poster ID
-          posterID: authUser!.uid,
-          posts: recipe));
+
+        posterID: authUser!.uid,
+        posts: recipe,
+        likedCount: 0,
+        dislikedCount: 0,
+        location: data['location'],
+      ));
     });
 
     db.collection(r).doc(_postId.toString()).set(recipe.toJson());
-    db
-        .collection('posts')
-        .doc((recipeLength + 1).toString())
-        .set({'posts': recipe.toJson(), 'posterID': authUser!.uid});
+    db.collection('posts').doc((recipeLength + 1).toString()).set({
+      'posts': recipe.toJson(),
+      'posterID': authUser!.uid,
+      'location': data['location'],
+      'likedCount': 0,
+      'dislikedCount': 0,
+    });
+
   }
 
   showSnackBar() {
@@ -225,7 +233,7 @@ class _PostPageState extends State<PostPage> {
                       icon: Icon(Icons.food_bank)),
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Please enter a title';
+                      return 'Please enter a recipe name';
                     }
                     return null;
                   },
@@ -283,7 +291,7 @@ class _PostPageState extends State<PostPage> {
                   decoration: const InputDecoration(
                       icon: Icon(Icons.list),
                       labelText: 'Steps',
-                      hintText: "ex. '1.pour broth,', comma separated"),
+                      hintText: "ex. 'pour broth,', comma separated"),
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter at least one step';
