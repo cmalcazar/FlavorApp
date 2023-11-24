@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 class recipeDetails extends StatelessWidget {
   final Map<String, dynamic> recipe;
@@ -14,44 +16,88 @@ class recipeDetails extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Recipe Details'),
-      ),
-      body: SingleChildScrollView(child: Center(
-        child: Column(
-          children: [
-            Text(recipe['recipeName'], style: TextStyle(fontSize: 50)),
-            Image.network(
-              recipe['image'] ?? ifnull,
-              fit: BoxFit.cover,
-            ),
-            // Display ingredients and steps side by side
-            Row(
-              children: [
-                // Ingredients on the left
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Ingredients:', style: TextStyle(fontSize: 30,  fontWeight: FontWeight.bold)),
-                      for (var ingredient in ingredients) Text(ingredient),
-                    ],
-                  ),
-                ),
-                // Steps on the right
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Steps:', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-                      for (var step in steps) Text(step),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
+        title: Text(
+          recipe['recipeName']?.toString()?.toUpperCase()?.trim() ?? ' ',
+          style: GoogleFonts.lato(),
         ),
-      ), ),
+      ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              Image.network(
+                recipe['image'] ?? ifnull,
+                fit: BoxFit.cover,
+              ),
+              // Display recipe description, ingredients, and steps
+              Column(
+                crossAxisAlignment:CrossAxisAlignment.start,
+                children: [
+                  // Recipe Description
+              Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '',
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold,
+                      fontFamily: 'Lato',),
+                  ),
+                  Text(
+                    recipe['description'] ?? 'No description available',
+                    style: GoogleFonts.lato(fontSize: 16),
+                  ),
+                  ],
+              ),
+              ),
+                  // Ingredients
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0,bottom: 5.0),
+                    child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Ingredients:', style: GoogleFonts.lato(fontSize: 30, fontWeight: FontWeight.bold,)),
+                      Container(
+                          width: 360,
+                          child:Divider(
+                        thickness: 4,
+                        color: Colors.red[500],
+                            height: 5,
+                      ),
+                      ),
+                      SizedBox(height: 8),
+                      for (var ingredient in ingredients) Text(ingredient,style: GoogleFonts.lato()),
+                    ],
+                  ),
+                  ),
+                  // Steps
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0,bottom: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                      Text('Instructions:', style: GoogleFonts.lato(fontSize: 30, fontWeight: FontWeight.bold,)),
+                        Container(
+                            width: 360,
+                        child:Divider(
+                          thickness: 4,
+                          color: Colors.red[500],
+                          height: 5,
+                        ),
+                        ),
+                        SizedBox(height: 10),
+                      for (var i = 0; i < steps.length; i++)
+                        Text('${i + 1}. ${steps[i]}',style: GoogleFonts.lato(),),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
