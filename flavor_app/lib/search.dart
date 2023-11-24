@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:favorite_button/favorite_button.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flavor_app/post.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'Recipe.dart';
 import 'favoriteProvider.dart';
-import 'postprovider.dart';
-import 'post.dart';
 import 'recipeDetails.dart';
 
 class SearchPage extends StatelessWidget {
@@ -32,36 +33,77 @@ class SearchPages extends StatefulWidget {
 
 class _SearchPagesState extends State<SearchPages> {
   final TextEditingController minutesToCookController = TextEditingController();
-  final List<TextEditingController> ingredientPreferenceControllers = List.generate(4, (_) => TextEditingController());
+  final List<TextEditingController> ingredientPreferenceControllers =
+  List.generate(4, (_) => TextEditingController());
   List recipeList = [];
   String ifnull =
       'https://firebasestorage.googleapis.com/v0/b/recipeapp-3ab43.appspot.com/o/images%2F1000_F_251955356_FAQH0U1y1TZw3ZcdPGybwUkH90a3VAhb.jpg?alt=media&token=091b00f6-a4a8-4a4a-b66f-60e8978fb471&_gl=1*1dfhnga*_ga*MTM5MTUxODI4My4xNjk4NTE4MjUw*_ga_CW55HF8NVT*MTY5OTM1MTA4OS40MS4xLjE2OTkzNTQ2MzMuMTAuMC4w';
 
-  /*
-  // this is the like button
+  @override
+  initState() {
+    super.initState();
+    //addPost();
+  }
+
+  // addPost() {
+  //   final auth = Provider.of<FirebaseAuth>(context, listen: false);
+  //   final db = Provider.of<FirebaseFirestore>(context, listen: false);
+  //   for (int i = 0; i < 201; i++) {
+  //     db
+  //         .collection('recipes')
+  //         .doc(i.toString())
+  //         .update({'posterID': auth.currentUser!.uid});
+  //   }
+  // }
+
+  //this is the like button
   _like(var post) {
     final favs = Provider.of<FavoritesProvider>(context, listen: false);
+    final db = Provider.of<FirebaseFirestore>(context);
+    final auth = Provider.of<FirebaseAuth>(context, listen: false);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: FavoriteButton(
         iconColor: Colors.pinkAccent.shade400,
         iconSize: 35.5,
-        isFavorite: post.isFavorite,
-        valueChanged: (fav) {
-          post.isFavorite = fav;
+        isFavorite: post['isFavorite'],
+        valueChanged: (fav) async {
+          Map<String, dynamic> updatedPost =
+          Map<String, dynamic>.from(post.data());
+          updatedPost['isFavorite'] = fav;
           if (fav) {
-            post.canAdd = false;
+            updatedPost['canAdd'] = false;
           }
-          favs.addFav(post);
-          print(favs.recipes.length);
+          var temp = convertToPost(updatedPost);
+          favs.addFav(temp);
+          List<Map<String, dynamic>> jsonList =
+          favs.recipes.map((item) => item.posts.toJson()).toList();
+          var authUser = auth.currentUser;
+          await db
+              .collection('users')
+              .doc(authUser!.uid)
+              .update({'favorites': jsonList});
         },
       ),
     );
   }
-*/
-  @override
-  void initState() {
-    super.initState();
+
+  convertToPost(post) {
+    Recipe tempRecipe = Recipe(
+      recipeId: post['recipeID'],
+      recipeName: post['recipeName'],
+      description: post['description'],
+      image: post['image'],
+      ingredients: List<String>.from(post['ingredients']),
+      steps: List<String>.from(post['steps']),
+      minutes: post['minutes'],
+      isFavorite: post['isFavorite'],
+      canAdd: post['canAdd'],
+      nutrition: List<double>.from(post['nutrition']),
+      tags: List<String>.from(post['tags']),
+    );
+    var tempPost = Post(posterID: post['posterID'], posts: tempRecipe);
+    return tempPost;
   }
 
   void filterRecipes() {
@@ -73,10 +115,9 @@ class _SearchPagesState extends State<SearchPages> {
     print('USER MINUTES $minutesToCook');
     print('USER PREFERENCES $ingredientPreferences');
 
-    var dbF = Provider.of<FirebaseFirestore>(context, listen:false);
+    var dbF = Provider.of<FirebaseFirestore>(context, listen: false);
     dbF.collection('recipes').get().then((querySnapshot) {
-      final suggestions = querySnapshot.docs
-          .where((recipeDoc) {
+      final suggestions = querySnapshot.docs.where((recipeDoc) {
         final recipe = recipeDoc.data();
         // print(recipe);for debugging
         final recipeCookingTime = recipe['minutes'];
@@ -88,11 +129,12 @@ class _SearchPagesState extends State<SearchPages> {
 
         final meetsCookingTime = recipeCookingTime <= minutesToCook;
         //print("Meets cooking time! $meetsCookingTime");
-        final hasMatchingIngredients = ingredientPreferences.every((ingredient) => recipeIngredients.contains(ingredient)); //every ingredient must match
+        final hasMatchingIngredients = ingredientPreferences.every(
+                (ingredient) => recipeIngredients
+                .contains(ingredient)); //every ingredient must match
         print("has Matching ingredients $hasMatchingIngredients");
         return meetsCookingTime && hasMatchingIngredients;
-      })
-          .toList();
+      }).toList();
 
       print('Filtered Recipes: $suggestions');
       //updates the list with the filtered recipes
@@ -122,14 +164,15 @@ class _SearchPagesState extends State<SearchPages> {
                       TextFormField(
                         controller: minutesToCookController,
                         keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Minutes to Cook',
                         ),
                       ),
-                      SizedBox(height: 20), // Adjust as needed for spacing
+                      const SizedBox(
+                          height: 20), // Adjust as needed for spacing
                       TextFormField(
                         controller: ingredientPreferenceControllers[0],
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Ingredient Preference 1',
                         ),
                       ),
@@ -141,14 +184,15 @@ class _SearchPagesState extends State<SearchPages> {
                     children: [
                       TextFormField(
                         controller: ingredientPreferenceControllers[1],
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Ingredient Preference 2',
                         ),
                       ),
-                      SizedBox(height: 20), // Adjust as needed for spacing
+                      const SizedBox(
+                          height: 20), // Adjust as needed for spacing
                       TextFormField(
                         controller: ingredientPreferenceControllers[2],
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Ingredient Preference 3',
                         ),
                       ),
@@ -158,10 +202,10 @@ class _SearchPagesState extends State<SearchPages> {
               ],
             ),
           ),
-          SizedBox(height: 100), // Adjust as needed for spacing
+          const SizedBox(height: 100), // Adjust as needed for spacing
           ElevatedButton(
             onPressed: filterRecipes,
-            child: Text('Filter Recipes'),
+            child: const Text('Filter Recipes'),
           ),
           Expanded(
             child: ListView.builder(
@@ -175,6 +219,7 @@ class _SearchPagesState extends State<SearchPages> {
                     fit: BoxFit.cover,
                   ),
                   title: Text(r['recipeName']),
+                  trailing: _like(r),
                   onTap: () {
                     // Navigate to the Recipe Details screen when tapped
                     Navigator.push(
@@ -192,4 +237,4 @@ class _SearchPagesState extends State<SearchPages> {
       ),
     );
   }
-  }
+}

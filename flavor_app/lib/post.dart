@@ -45,10 +45,5 @@ class Post {
 
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'posterID': posterID,
-      'posts': posts.toJson(),
-    };
-  }
+
 }
