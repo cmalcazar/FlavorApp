@@ -34,42 +34,42 @@ class recipeDetails extends StatelessWidget {
                 crossAxisAlignment:CrossAxisAlignment.start,
                 children: [
                   // Recipe Description
-              Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '',
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold,
-                      fontFamily: 'Lato',),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '',
+                          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold,
+                            fontFamily: 'Lato',),
+                        ),
+                        Text(
+                          recipe['description'] ?? 'No description available',
+                          style: GoogleFonts.lato(fontSize: 16),
+                        ),
+                      ],
+                    ),
                   ),
-                  Text(
-                    recipe['description'] ?? 'No description available',
-                    style: GoogleFonts.lato(fontSize: 16),
-                  ),
-                  ],
-              ),
-              ),
                   // Ingredients
                   Padding(
                     padding: const EdgeInsets.only(left: 16.0,bottom: 5.0),
                     child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Ingredients:', style: GoogleFonts.lato(fontSize: 30, fontWeight: FontWeight.bold,)),
-                      Container(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Ingredients:', style: GoogleFonts.lato(fontSize: 30, fontWeight: FontWeight.bold,)),
+                        SizedBox(
                           width: 360,
                           child:Divider(
-                        thickness: 4,
-                        color: Colors.red[500],
+                            thickness: 4,
+                            color: Colors.red[500],
                             height: 5,
-                      ),
-                      ),
-                      SizedBox(height: 8),
-                      for (var ingredient in ingredients) Text(ingredient,style: GoogleFonts.lato()),
-                    ],
-                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        for (var ingredient in ingredients) Text(ingredient,style: GoogleFonts.lato()),
+                      ],
+                    ),
                   ),
                   // Steps
                   Padding(
@@ -77,18 +77,18 @@ class recipeDetails extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                      Text('Instructions:', style: GoogleFonts.lato(fontSize: 30, fontWeight: FontWeight.bold,)),
+                        Text('Instructions:', style: GoogleFonts.lato(fontSize: 30, fontWeight: FontWeight.bold,)),
                         Container(
-                            width: 360,
-                        child:Divider(
-                          thickness: 4,
-                          color: Colors.red[500],
-                          height: 5,
+                          width: 360,
+                          child:Divider(
+                            thickness: 4,
+                            color: Colors.red[500],
+                            height: 5,
+                          ),
                         ),
-                        ),
-                        SizedBox(height: 10),
-                      for (var i = 0; i < steps.length; i++)
-                        Text('${i + 1}. ${steps[i]}',style: GoogleFonts.lato(),),
+                        const SizedBox(height: 10),
+                        for (var i = 0; i < steps.length; i++)
+                          Text('${i + 1}. ${steps[i]}',style: GoogleFonts.lato(),),
                       ],
                     ),
                   ),

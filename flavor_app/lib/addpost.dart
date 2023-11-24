@@ -71,7 +71,6 @@ class _PostPageState extends State<PostPage> {
   late int recipeLength;
   PlatformFile? imageFile;
   UploadTask? uploadTask;
-  late int recipeLength;
 
   int _postId = 0;
   String users = 'users';
