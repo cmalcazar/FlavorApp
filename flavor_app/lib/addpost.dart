@@ -176,6 +176,8 @@ class _PostPageState extends State<PostPage> {
         //this is the poster ID
         posterID: authUser!.uid,
         posts: recipe,
+        likedCount: 0,
+        dislikedCount: 0,
         location: data['location'],
       ));
     });
