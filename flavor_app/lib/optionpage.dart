@@ -43,8 +43,10 @@ class OptionPage extends StatelessWidget {
                     style: TextStyle(fontSize: 20),
                   ),
                   onTap: () {
-                    Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => UserProfileScreen()),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => UserProfileScreen()),
                     );
                   },
                 ),
@@ -97,8 +99,8 @@ class _PageState extends State<Pages> {
   // you will need to add a new page and add it to the list
   //then add a new icon to the bottom navigator
   final List<Widget> _pages = [
-    const UserFavoritesPage(),
     const DisplayRecipePage(),
+    const UserFavoritesPage(),
     const SearchPage()
   ];
 
@@ -115,7 +117,10 @@ class _PageState extends State<Pages> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    loginSuccess();
+  }
 
+  loginSuccess() {
     //this is the method that will be called when the user logs in
     //so we can see the green snackbar and shows us whose currently logged in
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -144,12 +149,12 @@ class _PageState extends State<Pages> {
       bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              label: 'Favorites',
-            ),
-            BottomNavigationBarItem(
               icon: Icon(Icons.account_circle),
               label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: 'Favorites',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.search),
