@@ -42,6 +42,7 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
   late List<Post> recipes = [];
   late List<Post> recipeList = [];
 
+  late var recipeLength;
   late final provider;
   late final db;
   late final auth;
@@ -57,32 +58,71 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
     provider = Provider.of<PostProvider>(context, listen: false);
     db = Provider.of<FirebaseFirestore>(context, listen: false);
     auth = Provider.of<FirebaseAuth>(context, listen: false);
+    checkForPosts();
 
-    extraData();
+    //extraData();
   }
 
-  getUserData() async {
-    var querySnapshot =
-    await db.collection('users').doc(auth.currentUser!.uid).get();
-    var uData = querySnapshot.data()!;
-    print(uData);
-    return uData;
-  }
 
+  //gets the user data from the database
+  getUserData(String? postID) async {
+    try {
+      var querySnapshot = await db.collection('users').doc(postID).get();
+      var uData = querySnapshot.data()!;
+      //print(uData);
+      return uData;
+    } catch (e) {
+      print(e);
+    }
+  }
   //gets the top 10 recipes from the database and adds it to the list
   //If the recipe is already in the list it won't add it again
-  extraData() async {
-    var uData = await getUserData();
-    for (int i = 0; i < 10; i++) {
+  // extraData() async {
+  //   var uData = await getUserData();
+  //   for (int i = 0; i < 10; i++) {
+  //     db
+  //         .collection('recipes')
+  //         .doc(i.toString())
+  //         .get()
+  //         .then((DocumentSnapshot documentSnapshot) {
+  //       if (documentSnapshot.exists) {
+  //         recipe = documentSnapshot.data();
+  //         setState(() {
+  //           data = Post.fromJson2(auth.currentUser, recipe);
+  //           if (!provider.posts.any(
+  //                   (post) => post.posts.recipeName == data.posts.recipeName)) {
+  //             provider.addPost(data);
+  //           }
+  //
+  //           recipes = provider.posts
+  //               .where((recipe) =>
+  //           recipe.posts.location == uData['location'] ||
+  //               recipe.posts.location == null)
+  //               .toList();
+  //
+  //           recipeList = recipes;
+  //         });
+  //       } else {
+  //         print('Document does not exist on the database');
+  //       }
+  //     });
+  //   }
+  // }
+
+  checkForPosts() async {
+    var uData = await getUserData(auth.currentUser!.uid);
+    recipeLength = await getCollectionLength();
+    for (int i = 0; i < recipeLength; i++) {
       db
-          .collection('recipes')
-          .doc(i.toString())
+          .collection('posts')
+          .doc((i + 1).toString())
           .get()
           .then((DocumentSnapshot documentSnapshot) {
         if (documentSnapshot.exists) {
           recipe = documentSnapshot.data();
           setState(() {
-            data = Post.fromJson2(auth.currentUser, recipe);
+            //data = Post.fromJson(recipe);
+            data = Post.fromJson2(recipe['posterID'], recipe['posts']);
             if (!provider.posts.any(
                     (post) => post.posts.recipeName == data.posts.recipeName)) {
               provider.addPost(data);
@@ -102,7 +142,6 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
       });
     }
   }
-
 //this is the like button
   _like(var post) {
     final favs = Provider.of<FavoritesProvider>(context, listen: false);
@@ -147,6 +186,12 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
     setState(() => recipeList = suggestions);
   }
 
+  Future<int> getCollectionLength() async {
+    QuerySnapshot _myDoc = await db.collection('posts').get();
+    List<DocumentSnapshot> _myDocCount = _myDoc.docs;
+    return _myDocCount.length;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -187,7 +232,7 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
                     fit: BoxFit.cover,
                   ),
                   title: Text(post.posts.recipeName),
-                  subtitle: Text(post.poster!.displayName!),
+                  subtitle: Text(post.posts.description),
                   trailing: _like(post),
                   onTap: () {
                     Navigator.push(

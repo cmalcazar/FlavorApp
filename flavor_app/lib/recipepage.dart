@@ -53,14 +53,20 @@ class ShowRecipePage extends StatefulWidget {
 
 class _ShowRecipeState extends State<ShowRecipePage> {
   Post post;
+  var userData;
+  late final db;
   String defaultPhoto =
       'https://firebasestorage.googleapis.com/v0/b/recipeapp-3ab43.appspot.com/o/images%2Fno-user-image.gif?alt=media&token=25a43660-490e-438d-b1c7-ad6f8c122f7d';
   String ifnull =
       'https://firebasestorage.googleapis.com/v0/b/recipeapp-3ab43.appspot.com/o/images%2F1000_F_251955356_FAQH0U1y1TZw3ZcdPGybwUkH90a3VAhb.jpg?alt=media&token=091b00f6-a4a8-4a4a-b66f-60e8978fb471&_gl=1*1dfhnga*_ga*MTM5MTUxODI4My4xNjk4NTE4MjUw*_ga_CW55HF8NVT*MTY5OTM1MTA4OS40MS4xLjE2OTkzNTQ2MzMuMTAuMC4w';
 
-  _ShowRecipeState({
-    required this.post,
-  });
+  _ShowRecipeState({required this.post});
+
+  @override
+  void initState() {
+    super.initState();
+    db = Provider.of<FirebaseFirestore>(context, listen: false);
+  }
 
   //This is the author of the recipe
   _postAuthor() {
@@ -68,7 +74,9 @@ class _ShowRecipeState extends State<ShowRecipePage> {
       children: [
         CircleAvatar(
           radius: 20,
-          backgroundImage: NetworkImage(post.poster!.photoURL ?? defaultPhoto),
+          backgroundImage: userData != null
+              ? NetworkImage(userData['profileImage'] ?? defaultPhoto)
+              : NetworkImage(defaultPhoto),
         ),
         const SizedBox(
           width: 10,
@@ -77,7 +85,7 @@ class _ShowRecipeState extends State<ShowRecipePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              post.poster!.displayName!,
+              userData['username'],
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
@@ -117,12 +125,39 @@ class _ShowRecipeState extends State<ShowRecipePage> {
     );
   }
 
+  getFutureBuilder() {
+    return FutureBuilder<DocumentSnapshot>(
+      future: db.collection('users').doc(post.posterID).get(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        print('posterID: ${post.posterID}'); // Print the posterID
+
+        if (snapshot.hasError) {
+          return const Text("Something went wrong");
+        }
+
+        if (snapshot.hasData && !snapshot.data!.exists) {
+          return const Text("Document does not exist");
+        }
+
+        if (snapshot.connectionState == ConnectionState.done) {
+          userData = snapshot.data!.data() as Map<String, dynamic>;
+          print('User data: $userData'); // Print the user data
+
+          return _postAuthor();
+        }
+
+        return const CircularProgressIndicator();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
-          _postAuthor(),
+          getFutureBuilder(),
           const SizedBox(
             height: 10,
           ),
@@ -181,6 +216,9 @@ class _ShowRecipeState extends State<ShowRecipePage> {
             height: 10,
           ),
           Text(post.posts.description, style: const TextStyle(fontSize: 18)),
+          const SizedBox(
+            height: 20,
+          ),
           const Row(
             children: [
               Text('Ingredients',
