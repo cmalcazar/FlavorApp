@@ -63,6 +63,7 @@ class _ShowRecipeState extends State<ShowRecipePage> {
 
   _ShowRecipeState({required this.post, required this.index});
 
+
   @override
   void initState() {
     super.initState();
@@ -131,7 +132,6 @@ class _ShowRecipeState extends State<ShowRecipePage> {
       future: db.collection('users').doc(post.posterID).get(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        // print('posterID: ${post.posterID}'); // Print the posterID
 
         if (snapshot.hasError) {
           return const Text("Something went wrong");
@@ -143,7 +143,6 @@ class _ShowRecipeState extends State<ShowRecipePage> {
 
         if (snapshot.connectionState == ConnectionState.done) {
           userData = snapshot.data!.data() as Map<String, dynamic>;
-          // print('User data: $userData'); // Print the user data
 
           return _postAuthor();
         }

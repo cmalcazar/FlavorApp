@@ -71,6 +71,7 @@ class _PostPageState extends State<PostPage> {
   late int recipeLength;
   PlatformFile? imageFile;
   UploadTask? uploadTask;
+  late int recipeLength;
 
   int _postId = 0;
   String users = 'users';
@@ -174,6 +175,7 @@ class _PostPageState extends State<PostPage> {
     setState(() {
       post.addPost(Post(
         //this is the poster ID
+
         posterID: authUser!.uid,
         posts: recipe,
         likedCount: 0,
@@ -190,6 +192,7 @@ class _PostPageState extends State<PostPage> {
       'likedCount': 0,
       'dislikedCount': 0,
     });
+
   }
 
   showSnackBar() {

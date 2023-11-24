@@ -121,7 +121,9 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
         if (documentSnapshot.exists) {
           recipe = documentSnapshot.data();
           setState(() {
+
             data = Post.fromJson(recipe);
+
             if (!provider.posts.any(
                     (post) => post.posts.recipeName == data.posts.recipeName)) {
               provider.addPost(data);

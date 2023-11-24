@@ -11,6 +11,7 @@ class Post {
   int likedCount = 0;
   int dislikedCount = 0;
 
+
   Post(
       {required this.posts,
         this.posterID,
@@ -19,6 +20,7 @@ class Post {
         this.isLiked = false,
         this.likedCount = 0,
         this.dislikedCount = 0});
+
 
 //this is the method that converts the json data to a recipe object
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -31,6 +33,7 @@ class Post {
     );
   }
 
+
   Map<String, dynamic> toJson() {
     return {
       'posterID': posterID,
@@ -38,6 +41,14 @@ class Post {
       'location': location,
       'likedCount': likedCount,
       'dislikedCount': dislikedCount,
+    };
+
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'posterID': posterID,
+      'posts': posts.toJson(),
     };
   }
 }
