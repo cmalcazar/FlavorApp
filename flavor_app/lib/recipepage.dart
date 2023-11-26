@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:favorite_button/favorite_button.dart';
 import 'package:like_button/like_button.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:provider/provider.dart';
 import 'favoriteProvider.dart';
@@ -270,54 +271,72 @@ class _ShowRecipeState extends State<ShowRecipePage> {
           const SizedBox(
             height: 10,
           ),
-          Text(post.posts.description, style: const TextStyle(fontSize: 18)),
-          const SizedBox(
-            height: 20,
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0,bottom: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(post.posts.description, style: GoogleFonts.lato(fontSize: 18)),
+              ],
+            ),
           ),
-          const Row(
-            children: [
-              Text('Ingredients',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))
-            ],
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0,bottom: 5.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Ingredients',style: TextStyle(fontFamily: 'Lato', fontSize: 25, fontWeight: FontWeight.bold))
+              ],
+            ),
           ),
-          const SizedBox(
-            height: 10,
+          SizedBox(
+            width: 360,
+            child:Divider(
+              thickness: 4,
+              color: Colors.red[500],
+              height: 0,
+            ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              for (var i = 0; i < post.posts.ingredients.length; i++)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    post.posts.ingredients[i],
-                    style: const TextStyle(fontSize: 18),
-                    textAlign: TextAlign.left,
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0,bottom: 5.0),
+            child:Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var i = 0; i < post.posts.ingredients.length; i++)
+                  Text(post.posts.ingredients[i],style: GoogleFonts.lato(fontSize: 18),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
-          const Row(
-            children: [
-              Text('Steps',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))
-            ],
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0,bottom: 8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Instructions',style: TextStyle(fontFamily: 'Lato',fontSize: 25, fontWeight: FontWeight.bold))
+              ],
+            ),
           ),
-          Column(
-            children: [
-              for (var i = 0; i < post.posts.steps.length; i++)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    '${i + 1}. ${post.posts.steps[i]}',
-                    style: const TextStyle(fontSize: 18),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-            ],
+          SizedBox(
+            width: 360,
+            child:Divider(
+              thickness: 4,
+              color: Colors.red[500],
+              height: 0,
+            ),
           ),
-          const SizedBox(
-            height: 10,
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0,bottom: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var i = 0; i < post.posts.steps.length; i++)
+                  Text('${i + 1}. ${post.posts.steps[i]}',
+                    style: GoogleFonts.lato(fontSize: 18),),
+              ],
+            ),
           ),
         ],
       ),
