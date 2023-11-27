@@ -299,13 +299,16 @@ class _ShowRecipeState extends State<ShowRecipePage> {
           ),
           const SizedBox(height: 8),
           Padding(
-            padding: const EdgeInsets.only(left: 20.0,bottom: 5.0),
+            padding: const EdgeInsets.only(left: 16.0,bottom: 5.0),
             child:Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 for (var i = 0; i < post.posts.ingredients.length; i++)
-                  Text(post.posts.ingredients[i],style: GoogleFonts.lato(fontSize: 18),
+                  Container(
+                    alignment:Alignment.centerLeft,
+                  child:Text(post.posts.ingredients[i],style: GoogleFonts.lato(fontSize: 18),
                   ),
+            ),
               ],
             ),
           ),
