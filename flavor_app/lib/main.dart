@@ -178,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Container(
             padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: Color.fromRGBO(255, 255, 255, 0.8), // transparent white
+          color: const Color.fromRGBO(255, 255, 255, 0.8), // transparent white
           borderRadius: BorderRadius.circular(15.0),
         ),
         child: Column(
@@ -205,7 +205,7 @@ class _LoginPageState extends State<LoginPage> {
                 icon: Icon(Icons.email, color: Colors.black54),
                 hintStyle: TextStyle(color: Colors.black54),
               ),
-              style: TextStyle(color: Colors.black),
+              style: const TextStyle(color: Colors.black),
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Email is required';
@@ -222,7 +222,7 @@ class _LoginPageState extends State<LoginPage> {
                 icon: Icon(Icons.lock, color: Colors.black54),
                 hintStyle: TextStyle(color: Colors.black54),
               ),
-              style: TextStyle(color: Colors.black),
+              style: const TextStyle(color: Colors.black),
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Password is required';
@@ -237,8 +237,8 @@ class _LoginPageState extends State<LoginPage> {
                 style: ButtonStyle(
                     shape: MaterialStateProperty.all(const StadiumBorder()),
                     textStyle:
-                    MaterialStateProperty.all(const TextStyle(fontSize: 35)),
-                    fixedSize: MaterialStateProperty.all(const Size(150, 50))),
+                    MaterialStateProperty.all(const TextStyle(fontSize: 17)),
+                    fixedSize: MaterialStateProperty.all(const Size(200, 50))),
                 onPressed: () async {
                   if (submit() && await login.call() == true) {
                     print(values);
@@ -260,7 +260,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.grey),
                     shape: MaterialStateProperty.all(const StadiumBorder()),
-                    fixedSize: MaterialStateProperty.all(const Size(150, 50))),
+                    fixedSize: MaterialStateProperty.all(const Size(200, 50))),
                 onPressed: () {
                   //takes the user to the create account page
                   Navigator.push(

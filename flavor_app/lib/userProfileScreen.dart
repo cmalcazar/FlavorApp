@@ -78,7 +78,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             right: 0,
                             child: InkWell(
                               onTap: () => _updateProfilePicture(context),
-                              child: CircleAvatar(
+                              child: const CircleAvatar(
                                 radius: 30,
                                 //while waiting to display the profile picture
                                 //the circle avatar background color will be red
@@ -95,7 +95,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       ),
                     ),
                     //small space
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     UserInfoRow(
                       label: 'Username',
@@ -103,7 +103,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       icon: Icons.person,
                     ),
                     //small space
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     UserInfoRow(
                       label: 'Email',
@@ -111,7 +111,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       icon: Icons.email,
                     ),
                     //small space
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     UserInfoRow(
                       label: 'Location',
@@ -120,7 +120,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     ),
 
                     //small space
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     UserInfoRow(
                       label: 'Favorites',
@@ -219,17 +219,17 @@ class UserInfoRow extends StatelessWidget {
           color: Colors.grey,
           size: 25,
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Text(
           '$label: ',
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.grey,
             fontSize: 25,
           ),
         ),
         Text(
           data ?? '',
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 25,
           ),

@@ -12,9 +12,9 @@ import 'post.dart';
 //might change it to a list time so you can just click and it'll show who uploaded it and the recipe
 
 class ShowRecipe extends StatelessWidget {
-  Post post;
-  int index;
-  ShowRecipe({required this.post, super.key, required this.index});
+  final Post post;
+  final int index;
+  const ShowRecipe({required this.post, super.key, required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +42,9 @@ class ShowRecipe extends StatelessWidget {
 }
 
 class ShowRecipePage extends StatefulWidget {
-  Post post;
-  int index;
-  ShowRecipePage({required this.post, super.key, required this.index});
+  final Post post;
+  final int index;
+  const ShowRecipePage({required this.post, super.key, required this.index});
 
   @override
   State<ShowRecipePage> createState() =>

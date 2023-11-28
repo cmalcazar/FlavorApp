@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -46,7 +45,7 @@ class AddPosts extends StatelessWidget {
 }
 
 class PostPage extends StatefulWidget {
-  PostPage({Key? key}) : super(key: key);
+  const PostPage({Key? key}) : super(key: key);
 
   @override
   _PostPageState createState() => _PostPageState();
@@ -80,7 +79,6 @@ class _PostPageState extends State<PostPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setUser();
   }
