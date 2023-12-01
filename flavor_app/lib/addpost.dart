@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:flavor_app/recipeTextFormField.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -221,113 +221,65 @@ class _PostPageState extends State<PostPage> {
                   onPressed: selectFile,
                   child: const Text('Select Image'),
                 ),
-                //THis is the recipe name
-                TextFormField(
-                  key: _recipeName,
-                  decoration: const InputDecoration(
-                      labelText: 'Title',
-                      hintText: 'Name of recipe',
-                      icon: Icon(Icons.food_bank)),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter a recipe name';
-                    }
-                    return null;
-                  },
-                ),
 
-                //This is the cook time
-                TextFormField(
-                  key: _minutes,
+
+                //RECIPE NAME
+                RecipeTextFormField(
+                  keyField: _recipeName, 
+                  icon: Icons.food_bank, 
+                  labelText: 'Title', 
+                  hintText: 'Name of recipe', 
+                  errorMessage: 'Please enter a recipe name'),
+
+                //COOKING MINUTES
+                RecipeTextFormField(
+                  keyField: _minutes, 
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                      icon: Icon(Icons.timer),
-                      labelText: 'Cook time',
-                      hintText: 'How long to cook ex. 55 (minutes))'),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter a time';
-                    }
-                    return null;
-                  },
-                ),
+                  icon: Icons.timer, 
+                  labelText: 'Cook time', 
+                  hintText: 'How long to cook ex. 55 (minutes)', 
+                  errorMessage: 'Please enter a time'),
 
-                //this is the ingredients
-                TextFormField(
-                  key: _ingredients,
-                  decoration: const InputDecoration(
-                      icon: Icon(Icons.food_bank_rounded),
-                      labelText: 'Ingredients',
-                      hintText: "ex. '3lbs tamales', comma separated "),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter atleast one ingredient';
-                    }
-                    return null;
-                  },
-                ),
+                //INGREDIENTS
+                RecipeTextFormField(
+                  keyField: _ingredients, 
+                  icon: Icons.food_bank_rounded, 
+                  labelText: 'Ingredients', 
+                  hintText: "ex. '1 lb ground beef', comma seaprated", 
+                  errorMessage: 'Please enter at least one ingredient'),
 
-                //This is the tags
-                TextFormField(
-                  key: _tags,
-                  decoration: const InputDecoration(
-                      icon: Icon(Icons.tag),
-                      labelText: 'Tags',
-                      hintText: "ex. 'mexican', comma separated "),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter atleast one tag';
-                    }
-                    return null;
-                  },
-                ),
+                //POST TAGS
+                RecipeTextFormField(
+                  keyField: _tags, 
+                  icon: Icons.tag, 
+                  labelText: 'Tags', 
+                  hintText: "ex. 'mexican', comma separated", 
+                  errorMessage: 'Please entere at least one tag'),
 
-                //This is the steps
-                TextFormField(
-                  key: _steps,
-                  decoration: const InputDecoration(
-                      icon: Icon(Icons.list),
-                      labelText: 'Steps',
-                      hintText: "ex. 'pour broth,', comma separated"),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter at least one step';
-                    }
-                    return null;
-                  },
-                ),
+                //INSTRUCTIONS
+                RecipeTextFormField(
+                  keyField: _steps, 
+                  icon: Icons.list, 
+                  labelText: 'Instructions', 
+                  hintText: "ex. 'pour broth,', comma separated", 
+                  errorMessage: 'Please enter at least one instruction'),
 
-                //This is the description
-                TextFormField(
-                  key: _description,
-                  decoration: const InputDecoration(
-                      icon: Icon(Icons.description),
-                      labelText: 'Description',
-                      hintText: 'Describe recipe'),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter a description';
-                    }
-                    return null;
-                  },
-                ),
+                //DESCRIPTION
+                RecipeTextFormField(
+                  keyField: _description, 
+                  icon: Icons.description, 
+                  labelText: 'Description', 
+                  hintText: 'Describe recipe', 
+                  errorMessage: 'Please enter a description'),
 
-                //This is the nutrition
-                TextFormField(
-                  key: _nutrition,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                      icon: Icon(Icons.inventory),
-                      labelText: 'Nutrition',
-                      hintText:
-                      "ex. 51.0 (calories (#), total fat, sugar, sodium, protein, saturated fats), comma separated "),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter atleast one nutrition value';
-                    }
-                    return null;
-                  },
-                ),
+                //NUTRITION FACTS
+                RecipeTextFormField(
+                  keyField: _nutrition,
+                  keyboardType: TextInputType.number, 
+                  icon: Icons.inventory, 
+                  labelText: 'Nutrition', 
+                  hintText:  "Enter values. ex. 51.0 (calories (#), total fat, sugar, sodium, protein, saturated fats), comma separated ", 
+                  errorMessage: 'Please enter atleast one nutrition value'),
 
                 //This is the submit button
                 Row(
@@ -365,3 +317,5 @@ class _PostPageState extends State<PostPage> {
             )));
   }
 }
+
+

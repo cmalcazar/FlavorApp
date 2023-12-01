@@ -231,47 +231,54 @@ class _LoginPageState extends State<LoginPage> {
               },
             ),
 
-              const SizedBox(height: 20.0),
-              //this is the login button
-              ElevatedButton(
-                style: ButtonStyle(
-                    shape: MaterialStateProperty.all(const StadiumBorder()),
-                    textStyle:
-                    MaterialStateProperty.all(const TextStyle(fontSize: 17)),
-                    fixedSize: MaterialStateProperty.all(const Size(200, 50))),
-                onPressed: () async {
-                  if (submit() && await login.call() == true) {
-                    print(values);
-                    if (mounted) {
-                      //this will take the user to the option page
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const OptionPage()));
-                    }
+            const SizedBox(height: 20.0),
+            //this is the login button
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                shape: MaterialStateProperty.all(const StadiumBorder()),
+                textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 17)),
+                fixedSize: MaterialStateProperty.all(const Size(200, 50))),
+              onPressed: () async {
+                if (submit() && await login.call() == true) {
+                  print(values);
+                  if (mounted) {
+                    //this will take the user to the option page
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const OptionPage()));
                   }
-                },
-                child: const Text('Login'),
-              ),
-              const SizedBox(height: 20.0),
+                }
+              },
+              child: const Text(
+                'Login',
+                style: TextStyle(color: Colors.black)),
+            ),
+            const SizedBox(height: 30.0),
+
+            const Text(
+            'Don\'t have an existing account?',
+            style: TextStyle(fontStyle: FontStyle.italic)
+            ),
+            const SizedBox(height: 10.0),
               //This is the create account button
 
-              ElevatedButton(
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.grey),
-                    shape: MaterialStateProperty.all(const StadiumBorder()),
-                    fixedSize: MaterialStateProperty.all(const Size(200, 50))),
-                onPressed: () {
-                  //takes the user to the create account page
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CreateAccount()));
-                },
-                child: const Text(
-                  'Create Account',
-                  style: TextStyle(color: Colors.black, fontSize: 17),
-                ),
+            ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.grey),
+                  shape: MaterialStateProperty.all(const StadiumBorder()),
+                  fixedSize: MaterialStateProperty.all(const Size(200, 50))),
+              onPressed: () {
+                //takes the user to the create account page
+                Navigator.push(context,
+                    MaterialPageRoute(
+                        builder: (context) => const CreateAccount()));
+              },
+              child: const Text(
+                'Create Account',
+                style: TextStyle(color: Colors.black, fontSize: 17),
+              ),
               ),
           ],
         ),
