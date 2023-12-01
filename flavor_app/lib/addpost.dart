@@ -19,7 +19,6 @@ class AddPosts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<FirebaseAuth>(context, listen: false);
     return MaterialApp(
       theme: ThemeData(
         primarySwatch: Colors.red,

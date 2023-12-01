@@ -94,7 +94,6 @@ class _LoginPageState extends State<LoginPage> {
   Future<bool?> login() async {
     //the auth and db variables are used to access the firebase authentication and firestore
     final auth = Provider.of<FirebaseAuth>(context, listen: false);
-    final db = Provider.of<FirebaseFirestore>(context, listen: false);
     String message = '';
 
     //try catch block checks if the user is in the database and if not it will throw an error

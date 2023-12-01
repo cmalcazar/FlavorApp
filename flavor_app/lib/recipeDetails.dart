@@ -17,7 +17,7 @@ class recipeDetails extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          recipe['recipeName']?.toString()?.toUpperCase()?.trim() ?? ' ',
+          recipe['recipeName']?.toString().toUpperCase().trim() ?? ' ',
           style: GoogleFonts.lato(),
         ),
       ),
