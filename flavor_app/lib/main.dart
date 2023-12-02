@@ -94,7 +94,6 @@ class _LoginPageState extends State<LoginPage> {
   Future<bool?> login() async {
     //the auth and db variables are used to access the firebase authentication and firestore
     final auth = Provider.of<FirebaseAuth>(context, listen: false);
-    final db = Provider.of<FirebaseFirestore>(context, listen: false);
     String message = '';
 
     //try catch block checks if the user is in the database and if not it will throw an error
@@ -178,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Container(
             padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: Color.fromRGBO(255, 255, 255, 0.8), // transparent white
+          color: const Color.fromRGBO(255, 255, 255, 0.8), // transparent white
           borderRadius: BorderRadius.circular(15.0),
         ),
         child: Column(
@@ -205,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                 icon: Icon(Icons.email, color: Colors.black54),
                 hintStyle: TextStyle(color: Colors.black54),
               ),
-              style: TextStyle(color: Colors.black),
+              style: const TextStyle(color: Colors.black),
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Email is required';
@@ -222,7 +221,7 @@ class _LoginPageState extends State<LoginPage> {
                 icon: Icon(Icons.lock, color: Colors.black54),
                 hintStyle: TextStyle(color: Colors.black54),
               ),
-              style: TextStyle(color: Colors.black),
+              style: const TextStyle(color: Colors.black),
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Password is required';
@@ -231,47 +230,54 @@ class _LoginPageState extends State<LoginPage> {
               },
             ),
 
-              const SizedBox(height: 20.0),
-              //this is the login button
-              ElevatedButton(
-                style: ButtonStyle(
-                    shape: MaterialStateProperty.all(const StadiumBorder()),
-                    textStyle:
-                    MaterialStateProperty.all(const TextStyle(fontSize: 35)),
-                    fixedSize: MaterialStateProperty.all(const Size(150, 50))),
-                onPressed: () async {
-                  if (submit() && await login.call() == true) {
-                    print(values);
-                    if (mounted) {
-                      //this will take the user to the option page
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const OptionPage()));
-                    }
+            const SizedBox(height: 20.0),
+            //this is the login button
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                shape: MaterialStateProperty.all(const StadiumBorder()),
+                textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 17)),
+                fixedSize: MaterialStateProperty.all(const Size(200, 50))),
+              onPressed: () async {
+                if (submit() && await login.call() == true) {
+                  print(values);
+                  if (mounted) {
+                    //this will take the user to the option page
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const OptionPage()));
                   }
-                },
-                child: const Text('Login'),
-              ),
-              const SizedBox(height: 20.0),
+                }
+              },
+              child: const Text(
+                'Login',
+                style: TextStyle(color: Colors.black)),
+            ),
+            const SizedBox(height: 30.0),
+
+            const Text(
+            'Don\'t have an existing account?',
+            style: TextStyle(fontStyle: FontStyle.italic)
+            ),
+            const SizedBox(height: 10.0),
               //This is the create account button
 
-              ElevatedButton(
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.grey),
-                    shape: MaterialStateProperty.all(const StadiumBorder()),
-                    fixedSize: MaterialStateProperty.all(const Size(150, 50))),
-                onPressed: () {
-                  //takes the user to the create account page
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CreateAccount()));
-                },
-                child: const Text(
-                  'Create Account',
-                  style: TextStyle(color: Colors.black, fontSize: 17),
-                ),
+            ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.grey),
+                  shape: MaterialStateProperty.all(const StadiumBorder()),
+                  fixedSize: MaterialStateProperty.all(const Size(200, 50))),
+              onPressed: () {
+                //takes the user to the create account page
+                Navigator.push(context,
+                    MaterialPageRoute(
+                        builder: (context) => const CreateAccount()));
+              },
+              child: const Text(
+                'Create Account',
+                style: TextStyle(color: Colors.black, fontSize: 17),
+              ),
               ),
           ],
         ),
