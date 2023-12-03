@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
-import 'displayRecipe.dart';
+import 'displayrecipe.dart';
 import 'userfavorites.dart';
-import 'userProfileScreen.dart';
+import 'userprofilescreen.dart';
 import 'main.dart';
 import 'search.dart';
 
