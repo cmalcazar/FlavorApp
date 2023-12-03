@@ -6,7 +6,7 @@ import 'package:flavor_app/post.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'Recipe.dart';
+import 'recipe.dart';
 import 'favoriteProvider.dart';
 import 'recipeDetails.dart';
 
@@ -225,7 +225,7 @@ class _SearchPagesState extends State<SearchPages> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => recipeDetails(r.data()),
+                        builder: (context) => RecipeDetails(r.data()),
                       ),
                     );
                   },

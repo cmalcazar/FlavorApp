@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
-class recipeDetails extends StatelessWidget {
+class RecipeDetails extends StatelessWidget {
   final Map<String, dynamic> recipe;
 
-  recipeDetails(this.recipe);
+  RecipeDetails(this.recipe);
 
   @override
   Widget build(BuildContext context) {

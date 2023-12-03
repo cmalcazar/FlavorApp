@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'post.dart';
+import 'Post.dart';
 
 //This is the post provider class
 class PostProvider extends ChangeNotifier {
