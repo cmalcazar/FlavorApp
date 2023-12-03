@@ -74,6 +74,9 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
       print(e);
     }
   }
+  //gets the top 10 recipes from the database and adds it to the list
+  //If the recipe is already in the list it won't add it again
+ 
 
   checkForPosts() async {
     var uData = await getUserData(auth.currentUser!.uid);

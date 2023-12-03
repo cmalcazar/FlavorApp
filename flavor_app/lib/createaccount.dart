@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'main.dart';
+import 'personalDataField.dart';
 
 class CreateAccount extends StatelessWidget {
   const CreateAccount({super.key});
@@ -81,7 +82,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     }
   }
 
-  submit() {
+  submitReg() {
     final isValid = _email.currentState?.validate();
     final isValids = _pass.currentState?.validate();
     final isValidss = _user.currentState?.validate();
@@ -128,86 +129,77 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 ),
               ),
             ),
-            TextFormField(
-              key: _user,
-              decoration: const InputDecoration(
-                labelText: 'Username',
-                labelStyle: TextStyle(fontSize: 20),
-                hintText: 'ex. JohnDoe123',
-                hintStyle: TextStyle(fontSize: 20),
-                icon: Icon(Icons.person),
-              ),
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Username is required';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              key: _email,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                labelStyle: TextStyle(fontSize: 20),
-                hintText: 'ex. johndoe123@yahoo.com',
-                hintStyle: TextStyle(fontSize: 20),
-                icon: Icon(Icons.email),
-              ),
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Password is required';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              key: _pass,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                labelStyle: TextStyle(fontSize: 20),
-                hintText: 'Enter your password',
-                hintStyle: TextStyle(fontSize: 20),
-                icon: Icon(Icons.lock),
-              ),
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Password is required';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              key: _loc,
-              autocorrect: true,
-              decoration: const InputDecoration(
-                labelText: 'Location',
-                labelStyle: TextStyle(fontSize: 20),
-                hintText: 'ex. New York, NY',
-                hintStyle: TextStyle(fontSize: 20),
-                icon: Icon(Icons.location_on),
-              ),
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Location is required';
-                }
-                return null;
-              },
-            ),
+
+            //USERNAME FIELD
+            PersonalDataField(
+              keyField: _user, 
+              labelText: 'Username', 
+              hintText: 'ex. JohnDoe123', 
+              errorMessage: 'Please enter a username', 
+              icon: Icons.person),
+
+            //EMAIL FIELD
+            PersonalDataField(
+              keyField: _email, 
+              labelText: 'Email', 
+              hintText: 'ex. johndoe123@yahoo.com', 
+              errorMessage: 'Please enter an email', 
+              icon: Icons.email),
+            
+            //PASSWORD FIELD
+            PersonalDataField(
+              keyField: _pass, 
+              labelText: 'Password', 
+              hintText: 'Enter your password', 
+              errorMessage: 'Password is required', 
+              icon: Icons.lock),
+
+            //LOCATION FIELD
+            PersonalDataField(
+              keyField: _loc,
+              labelText: 'Location',
+              hintText: 'ex. New York, NY',
+              icon: Icons.location_on,
+              errorMessage: 'Location is required'),
+            
             const SizedBox(height: 20.0),
+            
             ElevatedButton(
               style: ButtonStyle(
-                  shape: MaterialStateProperty.all(const StadiumBorder()),
-                  textStyle:
-                  MaterialStateProperty.all(const TextStyle(fontSize: 20)),
-                  fixedSize: MaterialStateProperty.all(const Size(200, 0))),
+                backgroundColor: MaterialStateProperty.all(Colors.grey),
+                shape: MaterialStateProperty.all(const StadiumBorder()),
+                textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 17)),
+                fixedSize: MaterialStateProperty.all(const Size(200, 50))),
+              onPressed: () async {
+                if (createUser().call() && submitReg()) {
+                  print(values);
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const Login()));
+                }
+              },
+              child: const Text(
+                'Create Account',
+                style: TextStyle(color: Colors.black)),
+            ),
+             const SizedBox(height: 30.0,),
+             const Text(
+              'Already an existing member?',
+              style: TextStyle(fontStyle: FontStyle.italic),
+             ),
+             const SizedBox(height: 10.0),
+             ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+                shape: MaterialStateProperty.all(const StadiumBorder()),
+                textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 17)),
+                fixedSize: MaterialStateProperty.all(const Size(200, 50))),
               onPressed: () {
-                print(values);
-                createUser();
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => const Login()));
               },
-              child: const Text('Create Account'),
+              child: const Text(
+                'Login',
+                style: TextStyle(color: Colors.black)),
             ),
           ],
         ),

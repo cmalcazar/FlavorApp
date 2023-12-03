@@ -114,7 +114,6 @@ class _PageState extends State<Pages> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loginSuccess();
   }

@@ -40,7 +40,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             //red loading indicator while data gets displayed
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
@@ -78,7 +78,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             right: 0,
                             child: InkWell(
                               onTap: () => _updateProfilePicture(context),
-                              child: CircleAvatar(
+                              child: const CircleAvatar(
                                 radius: 30,
                                 //while waiting to display the profile picture
                                 //the circle avatar background color will be red
@@ -94,24 +94,21 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         ],
                       ),
                     ),
-                    //small space
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     UserInfoRow(
                       label: 'Username',
                       data: userData['username'],
                       icon: Icons.person,
                     ),
-                    //small space
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     UserInfoRow(
                       label: 'Email',
-                      data: user?.email,
+                      data: user.email,
                       icon: Icons.email,
                     ),
-                    //small space
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     UserInfoRow(
                       label: 'Location',
@@ -119,8 +116,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       icon: Icons.location_on,
                     ),
 
-                    //small space
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
                     UserInfoRow(
                       label: 'Favorites',
@@ -184,7 +180,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
         //snackBar with a success message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Successfully updated profile picture!'),
             duration: Duration(seconds: 5),
           ),
@@ -207,7 +203,7 @@ class UserInfoRow extends StatelessWidget {
   final String? data;
   final IconData icon;
 
-  UserInfoRow({required this.label, required this.data, required this.icon});
+  const UserInfoRow({super.key, required this.label, required this.data, required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -219,17 +215,17 @@ class UserInfoRow extends StatelessWidget {
           color: Colors.grey,
           size: 25,
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Text(
           '$label: ',
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.grey,
             fontSize: 25,
           ),
         ),
         Text(
           data ?? '',
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 25,
           ),
