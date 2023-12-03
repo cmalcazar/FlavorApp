@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:favorite_button/favorite_button.dart';
 import 'package:like_button/like_button.dart';
-
 import 'package:provider/provider.dart';
+
 import 'favoriteProvider.dart';
 import 'post.dart';
 

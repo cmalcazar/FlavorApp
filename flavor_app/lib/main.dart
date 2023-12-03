@@ -4,9 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'createaccount.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
+import 'createaccount.dart';
 import 'favoriteProvider.dart';
 import 'optionpage.dart';
 import 'postprovider.dart';

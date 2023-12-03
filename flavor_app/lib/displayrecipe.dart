@@ -60,7 +60,6 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
     auth = Provider.of<FirebaseAuth>(context, listen: false);
     checkForPosts();
 
-    //extraData();
   }
 
 
@@ -75,39 +74,6 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
       print(e);
     }
   }
-  //gets the top 10 recipes from the database and adds it to the list
-  //If the recipe is already in the list it won't add it again
-  // extraData() async {
-  //   var uData = await getUserData();
-  //   for (int i = 0; i < 10; i++) {
-  //     db
-  //         .collection('recipes')
-  //         .doc(i.toString())
-  //         .get()
-  //         .then((DocumentSnapshot documentSnapshot) {
-  //       if (documentSnapshot.exists) {
-  //         recipe = documentSnapshot.data();
-  //         setState(() {
-  //           data = Post.fromJson2(auth.currentUser, recipe);
-  //           if (!provider.posts.any(
-  //                   (post) => post.posts.recipeName == data.posts.recipeName)) {
-  //             provider.addPost(data);
-  //           }
-  //
-  //           recipes = provider.posts
-  //               .where((recipe) =>
-  //           recipe.posts.location == uData['location'] ||
-  //               recipe.posts.location == null)
-  //               .toList();
-  //
-  //           recipeList = recipes;
-  //         });
-  //       } else {
-  //         print('Document does not exist on the database');
-  //       }
-  //     });
-  //   }
-  // }
 
   checkForPosts() async {
     var uData = await getUserData(auth.currentUser!.uid);

@@ -3,15 +3,15 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'postprovider.dart';
 import 'package:file_picker/file_picker.dart';
 
-import 'Recipe.dart';
+import 'recipe.dart';
 import 'post.dart';
 
 //This is the page to add recipes
