@@ -53,6 +53,7 @@ class _UserFavoritesPageState extends State<UserFavoritesPage> {
     getFavs();
   }
 
+  //gets the favorites from the favorites list in the favorites provider class
   getFavs() {
     setState(() {
       favs = provider.recipes;
@@ -60,6 +61,7 @@ class _UserFavoritesPageState extends State<UserFavoritesPage> {
     favList = favs;
   }
 
+  //Searches the recipes in the favorites list
   void searchRecipes(String query) {
     //Searches and creates new list of games that matches the query String
     //everytime the text field is changed

@@ -72,6 +72,7 @@ class _ShowRecipeState extends State<ShowRecipePage> {
   }
 
   //This is the author of the recipe
+  //shows picture in a circle and their username
   _postAuthor() {
     return Row(
       children: [
@@ -128,6 +129,8 @@ class _ShowRecipeState extends State<ShowRecipePage> {
     );
   }
 
+  //creates a future builder to get the user's information from the
+  //'users' firestore collection
   getFutureBuilder() {
     return FutureBuilder<DocumentSnapshot>(
       future: db.collection('users').doc(post.posterID).get(),
@@ -153,8 +156,8 @@ class _ShowRecipeState extends State<ShowRecipePage> {
     );
   }
 
+  //updates  the liked and disliked counts in the "posts" collection
   update() async {
-    print(index);
     await db.collection('posts').doc((index + 1).toString()).update({
       'likedCount': post.likedCount,
       'dislikedCount': post.dislikedCount,

@@ -39,23 +39,6 @@ class _SearchPagesState extends State<SearchPages> {
   String ifnull =
       'https://firebasestorage.googleapis.com/v0/b/recipeapp-3ab43.appspot.com/o/images%2F1000_F_251955356_FAQH0U1y1TZw3ZcdPGybwUkH90a3VAhb.jpg?alt=media&token=091b00f6-a4a8-4a4a-b66f-60e8978fb471&_gl=1*1dfhnga*_ga*MTM5MTUxODI4My4xNjk4NTE4MjUw*_ga_CW55HF8NVT*MTY5OTM1MTA4OS40MS4xLjE2OTkzNTQ2MzMuMTAuMC4w';
 
-  @override
-  initState() {
-    super.initState();
-    //addPost();
-  }
-
-  // addPost() {
-  //   final auth = Provider.of<FirebaseAuth>(context, listen: false);
-  //   final db = Provider.of<FirebaseFirestore>(context, listen: false);
-  //   for (int i = 0; i < 201; i++) {
-  //     db
-  //         .collection('recipes')
-  //         .doc(i.toString())
-  //         .update({'posterID': auth.currentUser!.uid});
-  //   }
-  // }
-
   //this is the like button
   _like(var post) {
     final favs = Provider.of<FavoritesProvider>(context, listen: false);
@@ -88,6 +71,7 @@ class _SearchPagesState extends State<SearchPages> {
     );
   }
 
+  //converts the post json string into a Post object
   convertToPost(post) {
     Recipe tempRecipe = Recipe(
       recipeId: post['recipeID'],
@@ -106,41 +90,33 @@ class _SearchPagesState extends State<SearchPages> {
     return tempPost;
   }
 
+  //filter's the recipes from the recipe firestore collection
   void filterRecipes() {
     final int minutesToCook = int.tryParse(minutesToCookController.text) ?? 0;
     final List<String> ingredientPreferences = ingredientPreferenceControllers
         .map((controller) => controller.text.toLowerCase())
         .where((ingredient) => ingredient.isNotEmpty)
         .toList();
-    print('USER MINUTES $minutesToCook');
-    print('USER PREFERENCES $ingredientPreferences');
 
     var dbF = Provider.of<FirebaseFirestore>(context, listen: false);
     dbF.collection('recipes').get().then((querySnapshot) {
       final suggestions = querySnapshot.docs.where((recipeDoc) {
         final recipe = recipeDoc.data();
-        // print(recipe);for debugging
         final recipeCookingTime = recipe['minutes'];
-        //print(recipeCookingTime);
         final recipeIngredients = List<String>.from(recipe['ingredients'])
             .map((ingredient) => ingredient.toLowerCase())
             .toSet();
-        //print(recipeIngredients);
 
         final meetsCookingTime = recipeCookingTime <= minutesToCook;
-        //print("Meets cooking time! $meetsCookingTime");
         final hasMatchingIngredients = ingredientPreferences.every(
                 (ingredient) => recipeIngredients
                 .contains(ingredient)); //every ingredient must match
-        print("has Matching ingredients $hasMatchingIngredients");
         return meetsCookingTime && hasMatchingIngredients;
       }).toList();
 
-      print('Filtered Recipes: $suggestions');
       //updates the list with the filtered recipes
       setState(() {
         recipeList = suggestions;
-        print(recipeList);
       });
     });
   }

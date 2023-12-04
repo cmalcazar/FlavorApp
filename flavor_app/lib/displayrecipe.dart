@@ -67,16 +67,12 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
     try {
       var querySnapshot = await db.collection('users').doc(postID).get();
       var uData = querySnapshot.data()!;
-      //print(uData);
       return uData;
     } catch (e) {
-      print(e);
     }
   }
-  //gets the top 10 recipes from the database and adds it to the list
-  //If the recipe is already in the list it won't add it again
- 
 
+  //gets the posts from the 'posts' firestore collection.
   checkForPosts() async {
     var uData = await getUserData(auth.currentUser!.uid);
     recipeLength = await getCollectionLength();
@@ -106,11 +102,11 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
             recipeList = recipes;
           });
         } else {
-          print('Document does not exist on the database');
         }
       });
     }
   }
+
 //this is the like button
   _like(var post) {
     final favs = Provider.of<FavoritesProvider>(context, listen: false);
@@ -140,6 +136,7 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
     );
   }
 
+  //Allows users to search recipes from the posts list
   void searchRecipes(String query) {
     //Searches and creates new list of games that matches the query String
     //everytime the text field is changed
@@ -155,6 +152,7 @@ class _DisplayRecipeState extends State<DisplayRecipePage> {
     setState(() => recipeList = suggestions);
   }
 
+  //Gets the length of the post firestore collection
   Future<int> getCollectionLength() async {
     QuerySnapshot _myDoc = await db.collection('posts').get();
     List<DocumentSnapshot> _myDocCount = _myDoc.docs;

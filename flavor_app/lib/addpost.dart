@@ -87,10 +87,10 @@ class _PostPageState extends State<PostPage> {
     final auth = Provider.of<FirebaseAuth>(context, listen: false);
     final dbF = Provider.of<FirebaseFirestore>(context, listen: false);
     authUser = auth.currentUser;
-    print(authUser!);
     db = dbF;
   }
 
+  //Allows user to select the picture they want to upload
   selectFile() async {
     final result = await FilePicker.platform.pickFiles();
     if (result == null) return;
@@ -100,6 +100,7 @@ class _PostPageState extends State<PostPage> {
     });
   }
 
+  //This method allows the user to upload a photo for their profile
   uploadFile() async {
     final storage = Provider.of<FirebaseStorage>(context, listen: false);
     final path = 'images/${_recipeName.currentState!.value!}.png';
@@ -114,7 +115,6 @@ class _PostPageState extends State<PostPage> {
 
       setState(() {
         image = urlDownload;
-        print('Image URL: $image'); // Print the image URL
       });
     } else {
       image = ifnull;
@@ -132,6 +132,8 @@ class _PostPageState extends State<PostPage> {
     return randomNumber;
   }
 
+  //Gets the length of the current 'post' collection in firestore
+  //returns int
   Future<int> getCollectionLength() async {
     QuerySnapshot _myDoc = await db.collection('posts').get();
     List<DocumentSnapshot> _myDocCount = _myDoc.docs;
@@ -191,6 +193,7 @@ class _PostPageState extends State<PostPage> {
 
   }
 
+  //lets the user know that the post was successfully added
   showSnackBar() {
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Post Added!'),
@@ -291,7 +294,6 @@ class _PostPageState extends State<PostPage> {
                           _postId = generateId();
                           image = temp;
                         });
-                        print(authUser!);
                         //THis is to submit the post with the user displayname
                         _submitPost();
                         showSnackBar();
