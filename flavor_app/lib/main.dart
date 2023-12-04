@@ -69,6 +69,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  //global keys for the user and password
   final GlobalKey<FormFieldState<String>> _user = GlobalKey();
   final GlobalKey<FormFieldState<String>> _pass = GlobalKey();
 
@@ -83,12 +84,6 @@ class _LoginPageState extends State<LoginPage> {
     _pass.currentState?.save();
     return true;
   }
-
-  //gets the values from the user input make sure it's correct
-  get values => {
-    'Email': _user.currentState?.value,
-    'Password': _pass.currentState?.value
-  };
 
   //login function that checks if the user is in the database
   Future<bool?> login() async {
@@ -106,43 +101,30 @@ class _LoginPageState extends State<LoginPage> {
       User? user = userCredential.user;
 
       if (user != null) {
-        print('Login Successful!');
-        print('User ID: ${user.uid}');
-        print('Email: ${user.email}');
-
         return true;
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        print(e.code);
         message = 'No user found for that email.';
-        print(e.code);
       } else if (e.code == 'wrong-password') {
-        print(e.code);
 
         message = 'Wrong password provided for that user.';
       } else if (e.code == 'invalid-email') {
-        print(e.code);
 
         message = 'Invalid email';
       } else if (e.code == 'too-many-requests') {
-        print(e.code);
 
         message = 'Too many requests';
       } else if (e.code == 'email-already-in-use') {
-        print(e.code);
 
         message = 'Email already in use';
       } else if (e.code == 'weak-password') {
-        print(e.code);
 
         message = 'The password provided is too weak.';
       } else if (e.code == 'invalid-credential') {
-        print(e.code);
 
         message = 'Invalid email.';
       } else {
-        print(e.code);
 
         message = 'Invalid email or password.';
       }
@@ -154,7 +136,6 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Colors.red,
       ));
     } catch (e) {
-      //print('here: ${e.toString()}');
     }
     return null;
   }
@@ -240,7 +221,6 @@ class _LoginPageState extends State<LoginPage> {
                 fixedSize: MaterialStateProperty.all(const Size(200, 50))),
               onPressed: () async {
                 if (submit() && await login.call() == true) {
-                  print(values);
                   if (mounted) {
                     //this will take the user to the option page
                     Navigator.push(

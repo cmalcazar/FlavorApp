@@ -28,11 +28,14 @@ class CreateAccountPage extends StatefulWidget {
 }
 
 class _CreateAccountPageState extends State<CreateAccountPage> {
+  //keys to add user data
   final GlobalKey<FormFieldState<String>> _email = GlobalKey();
   final GlobalKey<FormFieldState<String>> _pass = GlobalKey();
   final GlobalKey<FormFieldState<String>> _user = GlobalKey();
   final GlobalKey<FormFieldState<String>> _loc = GlobalKey();
 
+  //This is a snackbar to let the user know that the account was successfully created
+  //return Scaffold bar
   success() {
     return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Account created successfully!'),
@@ -40,6 +43,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     ));
   }
 
+  //Creates the user in the Firebase Authentication database
   createUser() async {
     final auth = Provider.of<FirebaseAuth>(context, listen: false);
     final db = Provider.of<FirebaseFirestore>(context, listen: false);
@@ -54,9 +58,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       user!.updateDisplayName(_user.currentState!.value!);
 
       if (userCredential.additionalUserInfo!.isNewUser) {
-        print('Successfully created an account!');
-        print('User ID: ${user.uid}');
-        print('Email: ${user.email}');
         db.collection('users').doc(user.uid).set({
           'username': _user.currentState!.value!,
           'email': _email.currentState!.value!,
@@ -78,10 +79,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         SnackBar(content: Text(message), backgroundColor: Colors.red),
       );
     } catch (e) {
-      print(e);
     }
   }
 
+  //Validator so that these fields are non nullable
   submitReg() {
     final isValid = _email.currentState?.validate();
     final isValids = _pass.currentState?.validate();
@@ -94,12 +95,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     _email.currentState?.save();
     return true;
   }
-
-  get values => {
-    'Email': _email.currentState?.value,
-    'Password': _pass.currentState?.value,
-    'Username': _user.currentState?.value
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +167,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 fixedSize: MaterialStateProperty.all(const Size(200, 50))),
               onPressed: () async {
                 if (createUser().call() && submitReg()) {
-                  print(values);
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => const Login()));
                 }

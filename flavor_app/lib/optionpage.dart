@@ -12,8 +12,6 @@ import 'search.dart';
 class OptionPage extends StatelessWidget {
   const OptionPage({super.key});
 
-  //this will be where the user can "sign out"
-  options() {}
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<FirebaseAuth>(context);
@@ -61,7 +59,6 @@ class OptionPage extends StatelessWidget {
                   ),
                   onTap: () {
                     auth.signOut();
-                    print('Current user: ${auth.currentUser!}');
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => const Login()));
                   },
@@ -106,6 +103,7 @@ class _PageState extends State<Pages> {
   late final authUser;
 
   //This is the method that will be called when the user taps on the bottom navigator
+  //
   void _onItemTapped(int index) {
     setState(() {
       _currentIndex = index;
@@ -118,16 +116,14 @@ class _PageState extends State<Pages> {
     loginSuccess();
   }
 
+  //this is the method that will be called when the user logs in
+  //so we can see the green snackbar and shows us whose currently logged in
   loginSuccess() {
-    //this is the method that will be called when the user logs in
-    //so we can see the green snackbar and shows us whose currently logged in
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final auth = Provider.of<FirebaseAuth>(context, listen: false);
       User? user = auth.currentUser;
       if (user != null) {
-        print('Logged in user: ${user.email}');
-      } else {
-        print('No user is logged in.');
       }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

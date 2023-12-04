@@ -22,7 +22,7 @@ class Post {
         this.dislikedCount = 0});
 
 
-//this is the method that converts the json data to a recipe object
+//converts the json data to a recipe object
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
       posterID: json['posterID'],
@@ -33,7 +33,7 @@ class Post {
     );
   }
 
-
+  //converts object to a json string
   Map<String, dynamic> toJson() {
     return {
       'posterID': posterID,

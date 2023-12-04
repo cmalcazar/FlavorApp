@@ -141,7 +141,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   //update user's profile picture
   //(similar to "addpost" when uploading a recipe image)
   Future<void> _updateProfilePicture(BuildContext context) async {
-    print('Updating profile picture...');
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
     );
@@ -171,9 +170,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             .collection('users')
             .doc(user.uid)
             .update({'profileImage': downloadURL});
-
-        //print the image URL
-        print('Image URL: $downloadURL');
 
         //trigger refresh
         _triggerRefresh();
